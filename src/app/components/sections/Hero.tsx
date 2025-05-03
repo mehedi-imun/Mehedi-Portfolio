@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Hero() {
@@ -74,7 +75,14 @@ export default function Hero() {
               <div className="absolute inset-0 bg-gradient-to-r from-[#ff914d]/20 to-transparent rounded-lg blur-3xl opacity-50 -z-10"></div>
               <div className="bg-gradient-to-br from-muted/30 to-transparent border border-white/10 backdrop-blur-sm aspect-square rounded-lg flex items-center justify-center text-6xl">
                 <div className="relative">
-                  <div className="animate-bounce">👋</div>
+                  <div className="">
+                    <Image
+                      src="https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png"
+                      width={900}
+                      height={900}
+                      alt="Picture of the author"
+                    />
+                  </div>
                   <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-transparent via-[#ff914d]/40 to-transparent rounded-full blur-sm"></div>
                 </div>
               </div>

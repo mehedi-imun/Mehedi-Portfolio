@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
         },
         {
           protocol: "https",
-          hostname: "hydeparkwinterwonderland.com",
+          hostname: "i.ibb.co.com",
         },
         {
           protocol: "https",
