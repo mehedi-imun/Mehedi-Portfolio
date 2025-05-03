@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { Download, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -50,7 +50,7 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white/30 dark:bg-black/30 backdrop-blur-xl border-b border-white/10 shadow-md">
-      <div className="max-w-7xl mx-auto sm:px-6 py-3 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto   py-3 flex items-center justify-between">
         {/* Logo */}
         <Link
           href="/"
@@ -77,6 +77,9 @@ export default function Header() {
               {item.name}
             </Link>
           ))}
+          <Button variant={"outline"}>
+            Resume <Download></Download>
+          </Button>
           <ThemeToggle />
         </nav>
 

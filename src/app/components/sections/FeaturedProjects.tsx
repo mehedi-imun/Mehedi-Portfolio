@@ -1,14 +1,23 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 import Link from "next/link";
 
 const projects = [
   {
     id: 1,
     title: "getting-started-with-nextjs",
-    description: "A modern e-commerce platform built with Next.js and Tailwind CSS.",
+    description:
+      "A modern e-commerce platform built with Next.js and Tailwind CSS.",
     tags: ["Next.js", "TypeScript", "Tailwind"],
     image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
     link: "/projects/1",
@@ -46,14 +55,24 @@ export default function FeaturedProjects() {
             <Link href="/projects">View All Projects</Link>
           </Button>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
-            <Card key={project.id} className="overflow-hidden hover:shadow-md transition-shadow">
+            <Card
+              key={project.id}
+              className=" hover:shadow-md transition-shadow relative"
+            >
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
               <div className="aspect-video relative overflow-hidden">
-                <img 
-                  src={project.image} 
-                  alt={project.title} 
+                <img
+                  src={project.image}
+                  alt={project.title}
                   className="object-cover w-full h-full transition-transform duration-500 hover:scale-105"
                 />
               </div>
@@ -64,7 +83,10 @@ export default function FeaturedProjects() {
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {project.tags.map((tag) => (
-                    <span key={tag} className="text-xs px-2 py-1 bg-muted rounded-md">
+                    <span
+                      key={tag}
+                      className="text-xs px-2 py-1 bg-muted rounded-md"
+                    >
                       {tag}
                     </span>
                   ))}

@@ -1,4 +1,5 @@
 import { Timeline } from "@/components/ui/timeline";
+import { GridBackgroundDemo } from "./components/GridBackgroundDemo";
 import ContactSection from "./components/sections/ContactSection";
 import FeaturedProjects from "./components/sections/FeaturedProjects";
 import Footer from "./components/sections/Footer";
@@ -77,9 +78,12 @@ export default function Home() {
     },
   ];
   return (
-    <div>
+    <div className="">
       <Hero></Hero>
-      <FeaturedProjects></FeaturedProjects>
+      <GridBackgroundDemo>
+        <FeaturedProjects></FeaturedProjects>
+      </GridBackgroundDemo>
+
       <div className="relative w-full overflow-clip" id="experience">
         <Timeline data={data} />
       </div>
