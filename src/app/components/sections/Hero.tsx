@@ -1,6 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -12,10 +14,20 @@ export default function Hero() {
       el.scrollIntoView({ behavior: "smooth" });
     }
   };
+  const words = [
+    {
+      text: "Mehedi",
+    },
+
+    {
+      text: "imun.",
+      className: "text-[#ff914d] dark:text-[#ff914d]",
+    },
+  ];
 
   return (
     <div className="max-w-7xl mx-auto ">
-      <section className="min-h-[90vh] flex items-center ">
+      <section className="min-h-[90vh] flex flex-wrap items-center ">
         <div className="page-container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Text Content */}
@@ -27,15 +39,18 @@ export default function Hero() {
                 </p>
               </div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
-                <span className="block">Hello, I'm</span>
+                <span className="block">Hello, I&apos;m</span>
                 <span className="bg-gradient-to-r from-[#ff914d] to-orange-400 bg-clip-text text-transparent">
-                  Your Name
+                  <TypewriterEffectSmooth words={words} />
                 </span>
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl">
-                A Next.js developer who creates modern, responsive, and
-                user-friendly web applications that bring ideas to life.
-              </p>
+              <div className="text-xl md:text-2xl text-muted-foreground max-w-2xl">
+                <TextGenerateEffect
+                  duration={1}
+                  words="A Full stack developer who creates modern, responsive, 
+                  and user-friendly web applications that bring ideas to life."
+                />
+              </div>
 
               <div className="flex flex-wrap gap-4 pt-4">
                 <Button

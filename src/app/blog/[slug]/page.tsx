@@ -107,7 +107,7 @@ const BlogPostPage = () => {
           <div className="text-center py-12">
             <h1 className="text-4xl font-bold mb-4">Post Not Found</h1>
             <p className="text-xl text-muted-foreground mb-6">
-              The blog post you're looking for doesn't exist.
+              The blog post you&apos;re looking for doesn&apos;t exist.
             </p>
             <Button asChild>
               <Link href="/blog">Back to Blog</Link>
