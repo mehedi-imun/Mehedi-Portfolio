@@ -4,8 +4,10 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t  bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4 lg:px-0 py-8">
+    
+    <footer className="border-t relative  ">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#ff914d]/20 to-transparent rounded-lg blur-3xl opacity-70 -z-10"></div>
+      <div className="max-w-7xl mx-auto px-4 lg:px-0 py-8 ">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="text-lg font-semibold mb-4">Portfolio</h3>

@@ -87,9 +87,9 @@ export default function Hero() {
 
             {/* Graphic Section */}
             <div className="hidden lg:block relative animate-slide-up">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#ff914d]/20 to-transparent rounded-lg blur-3xl opacity-50 -z-10"></div>
-              <div className="bg-gradient-to-br from-muted/30 to-transparent border border-white/10 backdrop-blur-sm aspect-square rounded-lg flex items-center justify-center text-6xl">
-                <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#ff914d]/20 to-transparent rounded-lg blur-3xl opacity-100 -z-10"></div>
+              <div className="bg-gradient-to-br from-muted/30 to-transparent border border-[ff914d] backdrop-blur-sm aspect-square rounded-lg flex items-center justify-center text-6xl">
+                <div className="relative" >
                   <div className="">
                     <Image
                       src="https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png"

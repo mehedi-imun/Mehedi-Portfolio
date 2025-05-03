@@ -9,18 +9,22 @@ import Tools from "../components/sections/Tools";
 export default function Home() {
   const data = [
     {
-      title: "2025 - Present",
+      title: "Jun 2024  - Present",
       content: (
         <div>
           <div>
-            <p className="mb-8 text-xs font-normal text-neutral-800 md:text-sm dark:text-neutral-200">
-              Senior Frontend Developer
-            </p>
-            <p className="text-primary font-medium mb-2">Programming Hero</p>
-            <p className="text-muted-foreground">
-              Developing and maintaining high-quality web applications using
-              Next.js and React. Leading a team of 5 developers and implementing
-              modern frontend architecture. 2018 - 2020
+            <h2 className="mb-4 text-2xl font-normal text-neutral-800 dark:text-neutral-200">
+              Senior Web Instructor
+            </h2>
+            <p className="text-primary font-medium mb-4">Programming Hero</p>
+            <p className="text-muted-foreground mb-4">
+              Guide and support the instructor team, ensuring alignment with the
+              company’s vision and mission. Conducted deep-dive conceptual
+              sessions on backend and frontend development, covering
+              technologies like TypeScript, React, Next.js, Node.js, Express,
+              GraphQL, PostgreSQL, MongoDB, Docker, CI/CD, and AWS. Help manage
+              and streamline the teaching process, ensuring high-quality
+              learning experiences for students.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -43,18 +47,18 @@ export default function Home() {
       ),
     },
     {
-      title: "Early 2023",
+      title: "Oct 2022 - May 2023",
       content: (
         <div>
           <div>
-            <p className="mb-8 text-xs font-normal text-neutral-800 md:text-sm dark:text-neutral-200">
+            <h2 className="mb-4 text-2xl font-normal text-neutral-800 dark:text-neutral-200">
               Senior Frontend Developer
-            </p>
-            <p className="text-primary font-medium mb-2">Programming Hero</p>
+            </h2>
+            <p className="text-primary font-medium mb-2">ProCorp</p>
             <p className="text-muted-foreground">
               Developing and maintaining high-quality web applications using
               Next.js and React. Leading a team of 5 developers and implementing
-              modern frontend architecture. 2018 - 2020
+              modern frontend architecture.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -84,11 +88,17 @@ export default function Home() {
         <FeaturedProjects></FeaturedProjects>
       </GridBackgroundDemo>
 
-      <div className="relative w-full overflow-clip px-4 lg:px-0" id="experience">
+      <div
+        className="relative w-full overflow-clip px-4 lg:px-0"
+        id="experience"
+      >
         <Timeline data={data} />
       </div>
+
       <Tools></Tools>
+
       <ContactSection></ContactSection>
+
       <Footer></Footer>
     </div>
   );
