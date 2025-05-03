@@ -17,7 +17,7 @@ export function GridBackgroundDemo({children}: {children: React.ReactNode}) {
         
       </div>
       
-     <div className="z-50"> {children}</div>
+     <div className="z-40"> {children}</div>
     </div>
   );
 }

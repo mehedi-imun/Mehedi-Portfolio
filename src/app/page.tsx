@@ -1,10 +1,10 @@
 import { Timeline } from "@/components/ui/timeline";
-import { GridBackgroundDemo } from "./components/GridBackgroundDemo";
-import ContactSection from "./components/sections/ContactSection";
-import FeaturedProjects from "./components/sections/FeaturedProjects";
-import Footer from "./components/sections/Footer";
-import Hero from "./components/sections/Hero";
-import Tools from "./components/sections/Tools";
+import { GridBackgroundDemo } from "../components/GridBackgroundDemo";
+import ContactSection from "../components/sections/ContactSection";
+import FeaturedProjects from "../components/sections/FeaturedProjects";
+import Footer from "../components/sections/Footer";
+import Hero from "../components/sections/Hero";
+import Tools from "../components/sections/Tools";
 
 export default function Home() {
   const data = [
@@ -84,7 +84,7 @@ export default function Home() {
         <FeaturedProjects></FeaturedProjects>
       </GridBackgroundDemo>
 
-      <div className="relative w-full overflow-clip" id="experience">
+      <div className="relative w-full overflow-clip px-4 lg:px-0" id="experience">
         <Timeline data={data} />
       </div>
       <Tools></Tools>

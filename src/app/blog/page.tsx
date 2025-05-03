@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import PageTransition from "../components/PageTransition";
-import BlogCard from "../components/BlogCard";
+import { Input } from "@/components/ui/input";
+import BlogCard from "../../components/BlogCard";
+import PageTransition from "../../components/PageTransition";
 
 const blogPosts = [
   {

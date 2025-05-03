@@ -2,17 +2,25 @@
 
 import { useState } from "react";
 // import PageTransition from "@/components/PageTransition";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import PageTransition from "../components/PageTransition";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import Image from "next/image";
+import Link from "next/link";
+import PageTransition from "../../components/PageTransition";
 
 const projects = [
   {
     id: 1,
     title: "E-Commerce Platform",
-    description: "A modern e-commerce platform built with Next.js and Tailwind CSS.",
+    description:
+      "A modern e-commerce platform built with Next.js and Tailwind CSS.",
     tags: ["Next.js", "TypeScript", "Tailwind"],
     image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
     link: "/projects/e-commerce",
@@ -57,7 +65,8 @@ const projects = [
   {
     id: 6,
     title: "Restaurant Website",
-    description: "A responsive website for a local restaurant with online ordering.",
+    description:
+      "A responsive website for a local restaurant with online ordering.",
     tags: ["React", "Styled Components", "Node.js"],
     image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
     link: "/projects/restaurant-website",
@@ -70,15 +79,16 @@ const categories = ["All", "Web App", "Website", "Mobile"];
 const ProjectPage = () => {
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const filteredProjects = activeCategory === "All"
-    ? projects
-    : projects.filter(project => project.category === activeCategory);
+  const filteredProjects =
+    activeCategory === "All"
+      ? projects
+      : projects.filter((project) => project.category === activeCategory);
 
   return (
     <PageTransition>
       <div className="max-w-7xl mx-auto  py-12">
         <h1 className="text-4xl font-bold mb-8">Projects</h1>
-        
+
         <div className="flex flex-wrap gap-2 mb-8">
           {categories.map((category) => (
             <Button
@@ -90,14 +100,17 @@ const ProjectPage = () => {
             </Button>
           ))}
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map((project) => (
-            <Card key={project.id} className="overflow-hidden hover:shadow-md transition-shadow">
+            <Card
+              key={project.id}
+              className="overflow-hidden hover:shadow-md transition-shadow"
+            >
               <div className="aspect-video relative overflow-hidden">
-                <Image 
-                  src={project.image} 
-                  alt={project.title} 
+                <Image
+                  src={project.image}
+                  alt={project.title}
                   className="object-cover w-full h-full transition-transform duration-500 hover:scale-105"
                   width={500}
                   height={300}
@@ -110,7 +123,10 @@ const ProjectPage = () => {
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {project.tags.map((tag) => (
-                    <span key={tag} className="text-xs px-2 py-1 bg-muted rounded-md">
+                    <span
+                      key={tag}
+                      className="text-xs px-2 py-1 bg-muted rounded-md"
+                    >
                       {tag}
                     </span>
                   ))}

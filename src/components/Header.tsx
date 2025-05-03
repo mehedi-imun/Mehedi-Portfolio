@@ -49,8 +49,8 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white/30 dark:bg-black/30 backdrop-blur-xl border-b border-white/10 shadow-md">
-      <div className="max-w-7xl mx-auto   py-3 flex items-center justify-between">
+    <header className=" fixed top-0 left-0 w-full z-50 bg-white/30 dark:bg-black/30 backdrop-blur-xl border-b border-white/10 shadow-md">
+      <div className="max-w-7xl mx-auto px-4 lg:px-0  py-3 flex items-center justify-between">
         {/* Logo */}
         <Link
           href="/"

@@ -32,7 +32,7 @@ export default function ContactSection() {
 
   return (
     <section className="py-20  mx-auto  bg-muted/30" id="contact">
-      <div className="max-w-7xl mx-auto ">
+      <div className="max-w-7xl mx-auto px-4 lg:px-0">
         <h2 className="section-heading">Get In Touch</h2>
         <p className="text-muted-foreground max-w-2xl mb-8">
           Have a question or want to work together? Feel free to reach out!
@@ -43,7 +43,7 @@ export default function ContactSection() {
             <CardHeader>
               <CardTitle>Send a Message</CardTitle>
               <CardDescription>
-                Fill out the form below and I&apos;ll get back to you as soon as
+                Fill out the form below and I&lsquo;ll get back to you as soon as
                 possible.
               </CardDescription>
             </CardHeader>

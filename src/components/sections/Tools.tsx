@@ -43,7 +43,7 @@ interface ToolItem {
   
   export default function Tools() {
     return (
-      <section className=" max-w-7xl mx-auto py-20" id="tools">
+      <section className=" max-w-7xl mx-auto px-4 lg:px-0 py-20" id="tools">
         <div className="page-container">
           <h2 className="section-heading">Tools & Technologies</h2>
   

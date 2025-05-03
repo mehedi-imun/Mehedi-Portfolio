@@ -1,7 +1,7 @@
 "use client";
 
-import { CommentSection } from "@/app/components/CommentSection";
-import PageTransition from "@/app/components/PageTransition";
+import { CommentSection } from "@/components/CommentSection";
+import PageTransition from "@/components/PageTransition";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Heart, MessageSquare } from "lucide-react";
 import Link from "next/link";
@@ -66,7 +66,7 @@ const blogPosts = {
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string }>();
-  console.log(slug)
+  console.log(slug);
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [hasLiked, setHasLiked] = useState<Record<string, boolean>>({});
   const post = slug ? blogPosts[slug as keyof typeof blogPosts] : null;

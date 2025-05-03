@@ -26,7 +26,7 @@ export default function Hero() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto ">
+    <div className="max-w-7xl mx-auto px-4 lg:px-0 ">
       <section className="min-h-[90vh] flex flex-wrap items-center ">
         <div className="page-container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
