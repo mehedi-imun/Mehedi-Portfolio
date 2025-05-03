@@ -10,7 +10,7 @@ import BlogCard from "../components/BlogCard";
 const blogPosts = [
   {
     id: "1",
-    title: "getting-started-with-nextjs",
+    title: "Getting Started with Next.js",
     excerpt:
       "Learn how to build modern web applications with Next.js, the React framework for production.",
     date: "May 2, 2025",
@@ -139,4 +139,3 @@ export default function BlogPage() {
     </PageTransition>
   );
 }
-
