@@ -7,11 +7,11 @@ import Link from "next/link";
 const projects = [
   {
     id: 1,
-    title: "E-Commerce Platform",
+    title: "getting-started-with-nextjs",
     description: "A modern e-commerce platform built with Next.js and Tailwind CSS.",
     tags: ["Next.js", "TypeScript", "Tailwind"],
     image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    link: "/projects/e-commerce",
+    link: "/projects/1",
   },
   {
     id: 2,

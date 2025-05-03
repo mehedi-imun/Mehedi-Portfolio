@@ -44,8 +44,7 @@ export default function Header() {
   // Determine active link
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
-    if (href.startsWith("/#"))
-      return pathname === "/" && hash === href.slice(1);
+    if (href.startsWith("/#")) return hash === href.slice(1);
     return pathname === href;
   };
 
@@ -73,6 +72,7 @@ export default function Header() {
                   ? "text-[#ff914d] after:w-full"
                   : "text-black/80 dark:text-white/80"
               )}
+              aria-current={isActive(item.href) ? "page" : undefined}
             >
               {item.name}
             </Link>
@@ -109,6 +109,7 @@ export default function Header() {
                     ? "text-[#ff914d]"
                     : "text-black/80 dark:text-white/80"
                 )}
+                aria-current={isActive(item.href) ? "page" : undefined}
               >
                 {item.name}
               </Link>
