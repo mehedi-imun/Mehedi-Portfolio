@@ -1,5 +1,7 @@
 // app/components/Tools.tsx or wherever appropriate
 
+import CardDemo from "../cards-demo-3";
+
 interface ToolItem {
     name: string;
     icon: string;
@@ -46,7 +48,7 @@ interface ToolItem {
       <section className=" max-w-7xl mx-auto px-4 lg:px-0 py-20" id="tools">
         <div className="page-container">
           <h2 className="section-heading">Tools & Technologies</h2>
-  
+      <CardDemo></CardDemo>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {tools.map((toolCategory) => (
               <div key={toolCategory.category}>

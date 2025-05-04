@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Facebook, Github, LinkedinIcon, X } from "lucide-react";
 import { useState } from "react";
 
 export default function ContactSection() {
@@ -43,8 +44,8 @@ export default function ContactSection() {
             <CardHeader>
               <CardTitle>Send a Message</CardTitle>
               <CardDescription>
-                Fill out the form below and I&lsquo;ll get back to you as soon as
-                possible.
+                Fill out the form below and I&lsquo;ll get back to you as soon
+                as possible.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -110,33 +111,43 @@ export default function ContactSection() {
                       href="mailto:hello@example.com"
                       className="text-muted-foreground hover:text-brand"
                     >
-                      hello@example.com
+                      mehediimun@gmail.com
                     </a>
                   </div>
                   <div>
                     <p className="font-medium">Location</p>
-                    <p className="text-muted-foreground">City, Country</p>
+                    <p className="text-muted-foreground">Dhaka,Bangladesh</p>
                   </div>
                   <div>
                     <p className="font-medium">Social</p>
                     <div className="flex space-x-4 mt-2">
                       <a
-                        href="#"
+                        href="https://www.facebook.com/mehediimun"
+                        target="_blank"
                         className="text-muted-foreground hover:text-brand"
                       >
-                        Twitter
+                        <Facebook />
                       </a>
                       <a
-                        href="#"
+                        href="https://x.com/mehediimun"
+                        target="_blank"
                         className="text-muted-foreground hover:text-brand"
                       >
-                        GitHub
+                        <X></X>
                       </a>
                       <a
-                        href="#"
+                        href="https://github.com/mehedi-imun"
+                        target="_blank"
                         className="text-muted-foreground hover:text-brand"
                       >
-                        LinkedIn
+                        <Github />
+                      </a>
+                      <a
+                        href="https://www.linkedin.com/in/mehedi-imun/"
+                        target="_blank"
+                        className="text-muted-foreground hover:text-brand"
+                      >
+                        <LinkedinIcon />
                       </a>
                     </div>
                   </div>

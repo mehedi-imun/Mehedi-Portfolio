@@ -65,13 +65,18 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Connect</h3>
             <div className="flex space-x-4">
-              <a href="#" className="text-muted-foreground hover:text-brand">
-                Twitter
+            <a href="https://www.facebook.com/mehediimun" className="text-muted-foreground hover:text-brand" target="_blank" >
+              
+              Facebook
+            </a>
+              <a href="https://x.com/mehediimun" className="text-muted-foreground hover:text-brand" target="_blank" >
+              
+                X
               </a>
-              <a href="#" className="text-muted-foreground hover:text-brand">
+              <a href="https://github.com/mehedi-imun" className="text-muted-foreground hover:text-brand" target="_blank" >
                 GitHub
               </a>
-              <a href="#" className="text-muted-foreground hover:text-brand">
+              <a href="https://www.linkedin.com/in/mehedi-imun/" className="text-muted-foreground hover:text-brand" target="_blank" >
                 LinkedIn
               </a>
             </div>
