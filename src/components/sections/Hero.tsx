@@ -32,17 +32,17 @@ export default function Hero() {
     {
       title: "React",
       image: "https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png",
-      className: "absolute top-10 left-[20%] rotate-[-5deg]",
+      className: "absolute top-90 left-[10%] rotate-[-5deg]",
     },
     {
       title: "Next.js",
       image: "https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png",
-      className: "absolute top-40 left-[25%] rotate-[-7deg]",
+      className: "absolute top-80 left-[25%] rotate-[-7deg]",
     },
     {
       title: "Python",
       image: "https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png",
-      className: "absolute top-5 left-[40%] rotate-[8deg]",
+      className: "absolute top-90 left-[40%] rotate-[8deg]",
     },
   ];
   return (
@@ -54,8 +54,7 @@ export default function Hero() {
             <div className="animate-slide-down space-y-6">
               <div>
                 <p className="inline-flex items-center rounded-full px-4 py-1 text-sm font-medium bg-muted/30 text-[#ff914d] mb-4">
-                  <span className="animate-pulse mr-1">●</span> Available for
-                  hire
+                  <span className="animate-pulse mr-1">●</span> Available 
                 </p>
               </div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">

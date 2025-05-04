@@ -34,7 +34,7 @@ export default function ContactSection() {
   return (
     <section className="py-20  mx-auto  bg-muted/30" id="contact">
       <div className="max-w-7xl mx-auto px-4 lg:px-0">
-        <h2 className="section-heading">Get In Touch</h2>
+        <h2 className="text-lg md:text-4xl mb-4 text-black dark:text-white max-w-4xl">Get In Touch</h2>
         <p className="text-muted-foreground max-w-2xl mb-8">
           Have a question or want to work together? Feel free to reach out!
         </p>

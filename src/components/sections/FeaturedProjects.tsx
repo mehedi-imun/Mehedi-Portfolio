@@ -46,7 +46,7 @@ export default function FeaturedProjects() {
       <div className="page-container">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12">
           <div>
-            <h2 className="section-heading">Featured Projects</h2>
+            <h2 className="text-lg md:text-4xl mb-4 text-black dark:text-white max-w-4xl">Featured Projects</h2>
             <p className="text-muted-foreground max-w-2xl">
               Check out some of my recent work.
             </p>

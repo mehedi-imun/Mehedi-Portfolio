@@ -1,4 +1,3 @@
-import CardDemo from "@/components/cards-demo-3";
 import { Badge } from "@/components/ui/badge";
 import { Timeline } from "@/components/ui/timeline";
 import { GridBackgroundDemo } from "../components/GridBackgroundDemo";
@@ -51,7 +50,11 @@ export default function Home() {
                   <div className="absolute left-1.5 top-5 w-[1px] h-[calc(100%-24px)] bg-border"></div>
                 )}
                 <div>
-                  <Badge className="mb-2 ">{experience.duration}</Badge>
+                <Badge className="inline-flex items-center rounded-full px-4 py-1 text-sm font-medium bg-muted/30 text-[#ff914d] mb-4">
+                  
+                  {experience.duration}
+                </Badge>
+                 
                   <h3 className="text-xl font-bold">{experience.title}</h3>
                   <p className="text-brand font-medium mb-2">
                     {experience.company}
@@ -80,7 +83,11 @@ export default function Home() {
                   <div className="absolute left-1.5 top-5 w-[1px] h-[calc(100%-24px)] bg-border"></div>
                 )}
                 <div>
-                  <Badge className="mb-2 ">{experience.duration}</Badge>
+                  <Badge className="inline-flex items-center rounded-full px-4 py-1 text-sm font-medium bg-muted/30 text-[#ff914d] mb-4">
+                  
+                    {experience.duration}
+                  </Badge>
+
                   <h3 className="text-xl font-bold">{experience.title}</h3>
                   <p className="text-brand font-medium mb-2">
                     {experience.company}
@@ -111,7 +118,7 @@ export default function Home() {
       </div>
 
       <Tools></Tools>
-  
+
       <ContactSection></ContactSection>
 
       <Footer></Footer>
