@@ -56,7 +56,7 @@ export default function Header() {
           href="/"
           className="text-2xl font-bold bg-gradient-to-r from-[#ff914d] to-orange-400 bg-clip-text text-transparent"
         >
-          Portfolio
+          Mehedi
         </Link>
 
         {/* Desktop Nav */}

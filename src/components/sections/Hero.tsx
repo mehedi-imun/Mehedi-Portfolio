@@ -5,10 +5,7 @@ import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  DraggableCardBody,
-  DraggableCardContainer,
-} from "../ui/draggable-card";
+import { DraggableCardContainer } from "../ui/draggable-card";
 
 export default function Hero() {
   const handleScroll = (id: string) => (e: React.MouseEvent) => {
@@ -28,23 +25,7 @@ export default function Hero() {
       className: "text-[#ff914d] dark:text-[#ff914d]",
     },
   ];
-  const items = [
-    {
-      title: "React",
-      image: "https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png",
-      className: "absolute top-90 left-[10%] rotate-[-5deg]",
-    },
-    {
-      title: "Next.js",
-      image: "https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png",
-      className: "absolute top-80 left-[25%] rotate-[-7deg]",
-    },
-    {
-      title: "Python",
-      image: "https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png",
-      className: "absolute top-90 left-[40%] rotate-[8deg]",
-    },
-  ];
+
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-0 ">
       <section className="min-h-[90vh] flex flex-wrap items-center ">
@@ -54,7 +35,7 @@ export default function Hero() {
             <div className="animate-slide-down space-y-6">
               <div>
                 <p className="inline-flex items-center rounded-full px-4 py-1 text-sm font-medium bg-muted/30 text-[#ff914d] mb-4">
-                  <span className="animate-pulse mr-1">●</span> Available 
+                  <span className="animate-pulse mr-1">●</span> Available
                 </p>
               </div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
@@ -66,8 +47,7 @@ export default function Hero() {
               <div className="text-xl md:text-2xl text-muted-foreground max-w-2xl">
                 <TextGenerateEffect
                   duration={1}
-                  words="A Full stack developer who creates modern, responsive, 
-                  and user-friendly web applications that bring ideas to life."
+                  words="Web Developer with 2+ years of experience building scalable systems using Node.js, Express, and PostgreSQL. Skilled in API design, Docker, and CI/CD pipelines passionate about learning new technologies and delivering secure, high-performance backend solutions."
                 />
               </div>
 
@@ -111,20 +91,6 @@ export default function Hero() {
               <div className="bg-gradient-to-br from-muted/30 to-transparent border border-[ff914d] backdrop-blur-sm aspect-square rounded-lg flex items-center justify-center text-6xl">
                 <div className=" flex h-full w-full items-center justify-center overflow-hidden ">
                   <DraggableCardContainer className="relative flex min-h-full w-full items-center justify-center overflow-clip">
-                    {items.map((item) => (
-                      <DraggableCardBody
-                        key={item.title}
-                        className={item.className}
-                      >
-                        <Image
-                          src={item.image}
-                          alt={item.title}
-                          className="pointer-events-none relative z-10 w-80 h-80 object-cover"
-                          width={800}
-                          height={800}
-                        />
-                      </DraggableCardBody>
-                    ))}
                     <Image
                       src="https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png"
                       width={900}
