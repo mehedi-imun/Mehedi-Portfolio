@@ -45,7 +45,7 @@ export default function Hero() {
               <div className="text-xl md:text-2xl text-muted-foreground max-w-2xl">
                 <TextGenerateEffect
                   duration={1}
-                  words="Web Developer with 2+ years of experience building scalable systems using Node.js, Express, and PostgreSQL. Skilled in API design, Docker, and CI/CD pipelines passionate about learning new technologies and delivering secure, high-performance backend solutions."
+                  words="Web Developer with 4 years of experience building scalable systems using Node.js, Express, and PostgreSQL. Skilled in API design, Docker, and CI/CD pipelines passionate about learning new technologies and delivering secure, high-performance backend solutions."
                 />
               </div>
 
