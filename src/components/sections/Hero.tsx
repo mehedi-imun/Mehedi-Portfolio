@@ -33,7 +33,7 @@ export default function Hero() {
             <div className="animate-slide-down space-y-6">
               <div>
                 <p className="inline-flex items-center rounded-full px-4 py-1 text-sm font-medium bg-muted/30 text-[#ff914d] mb-4">
-                  <span className="animate-pulse mr-1">●</span> Available 
+                  <span className="animate-pulse mr-1">●</span> Available
                 </p>
               </div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
@@ -45,8 +45,7 @@ export default function Hero() {
               <div className="text-xl md:text-2xl text-muted-foreground max-w-2xl">
                 <TextGenerateEffect
                   duration={1}
-                  words="A Full stack developer who creates modern, responsive, 
-                  and user-friendly web applications that bring ideas to life."
+                  words="Web Developer with 2+ years of experience building scalable systems using Node.js, Express, and PostgreSQL. Skilled in API design, Docker, and CI/CD pipelines passionate about learning new technologies and delivering secure, high-performance backend solutions."
                 />
               </div>
 
