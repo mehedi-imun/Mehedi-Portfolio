@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 import { cn } from "@/lib/utils";
 import { animate, motion } from "motion/react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 interface Tool {
   category: string;
   items: { icon: React.ReactNode }[];
@@ -72,7 +73,7 @@ const Skeleton = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     animate(sequence, {
-      // @ts-ignore
+      // @ts-expect-error
       repeat: Infinity,
       repeatDelay: 1,
     });
@@ -92,30 +93,38 @@ const Skeleton = ({ children }: { children: React.ReactNode }) => {
     </div>
   );
 };
+/* eslint-disable react-hooks/purity -- decorative star field; random values are intentionally regenerated per render */
 const Sparkles = () => {
-  const randomMove = () => Math.random() * 2 - 1;
-  const randomOpacity = () => Math.random();
-  const random = () => Math.random();
+  const [stars] = useState(
+    Array.from({ length: 12 }, (_, i) => ({
+      key: `star-${i}`,
+      top: Math.random() * 100,
+      left: Math.random() * 100,
+      dx: Math.random() * 2 - 1,
+      opacity: Math.random(),
+      duration: Math.random() * 2 + 4,
+    }))
+  );
   return (
     <div className="absolute inset-0">
-      {[...Array(12)].map((_, i) => (
+      {stars.map((star) => (
         <motion.span
-          key={`star-${i}`}
+          key={star.key}
           animate={{
-            top: `calc(${random() * 100}% + ${randomMove()}px)`,
-            left: `calc(${random() * 100}% + ${randomMove()}px)`,
-            opacity: randomOpacity(),
+            top: `calc(${star.top}% + ${star.dx}px)`,
+            left: `calc(${star.left}% + ${star.dx}px)`,
+            opacity: star.opacity,
             scale: [1, 1.2, 0],
           }}
           transition={{
-            duration: random() * 2 + 4,
+            duration: star.duration,
             repeat: Infinity,
             ease: "linear",
           }}
           style={{
             position: "absolute",
-            top: `${random() * 100}%`,
-            left: `${random() * 100}%`,
+            top: `${star.top}%`,
+            left: `${star.left}%`,
             width: `2px`,
             height: `2px`,
             borderRadius: "50%",

@@ -10,14 +10,22 @@ export default function Home() {
   const experiences1 = [
     {
       id: 1,
+      title: "Full Stack Developer",
+      company: "Programming Hero",
+      duration: "Jun 2026 - Present",
+      description:
+        "Built an AI-native ingestion engine using SHA-256 deduplication and two-band semantic cosine matching with LLM judge fallbacks. Developed a multi-platform content generation pipeline using brand-voice RAG retrieval and few-shot conditioning for <10s outputs. Implemented decay-aware trend ranking algorithms, background cron schedulers.",
+    },
+    {
+      id: 2,
       title: "Senior Web Instructor",
       company: "Programming Hero",
-      duration: "Jun 2024 - Present",
+      duration: "Jun 2024 - Jun 2026",
       description:
         "Guide and support the instructor team, ensuring alignment with the company’s vision and mission.Conducted deep-dive conceptual sessions on backend and frontend development, covering technologies like TypeScript, React, Next.js, Node.js, Express, GraphQL, PostgreSQL, MongoDB, Docker, CI/CD, and AWS.Help manage and streamline the teaching process, ensuring high-quality learning experiences for students.Guide and support the instructor team, ensuring alignment with the company’s vision and mission. Conducted deep-dive conceptual sessions on backend and frontend development, covering technologies like TypeScript, React, Next.js, Node.js, Express, GraphQL, PostgreSQL, MongoDB, Docker, CI/CD, and AWS. Help manage and streamline the teaching process, ensuring high-quality learning experiences for students.",
     },
     {
-      id: 2,
+      id: 3,
       title: "web instructor ",
       company: "Programming Hero",
       duration: "May 2023 - Jun 2024",

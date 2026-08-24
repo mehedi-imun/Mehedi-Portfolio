@@ -86,8 +86,8 @@ const ProjectPage = () => {
 
   return (
     <PageTransition>
-      <div className="max-w-7xl mx-auto  py-12">
-        <h1 className="text-4xl font-bold mb-8">Projects</h1>
+      <div className="max-w-7xl mx-auto px-4 lg:px-0 py-12">
+        <h1 className="text-2xl md:text-4xl font-bold mb-8">Projects</h1>
 
         <div className="flex flex-wrap gap-2 mb-8">
           {categories.map((category) => (

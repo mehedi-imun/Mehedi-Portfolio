@@ -96,8 +96,8 @@ export default function BlogPage() {
 
   return (
     <PageTransition>
-      <div className="max-w-7xl mx-auto py-12">
-        <h1 className="text-4xl font-bold mb-8">Blog</h1>
+      <div className="max-w-7xl mx-auto px-4 lg:px-0 py-12">
+        <h1 className="text-2xl md:text-4xl font-bold mb-8">Blog</h1>
 
         <div className="mb-8">
           <Input

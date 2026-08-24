@@ -66,7 +66,6 @@ const blogPosts = {
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string }>();
-  console.log(slug);
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [hasLiked, setHasLiked] = useState<Record<string, boolean>>({});
   const post = slug ? blogPosts[slug as keyof typeof blogPosts] : null;
@@ -76,8 +75,12 @@ const BlogPostPage = () => {
     const savedLikes = localStorage.getItem("blogLikes");
     const savedHasLiked = localStorage.getItem("blogHasLiked");
 
-    if (savedLikes) setLikes(JSON.parse(savedLikes));
-    if (savedHasLiked) setHasLiked(JSON.parse(savedHasLiked));
+    if (savedLikes)
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrating persisted client-only state after mount
+      setLikes(JSON.parse(savedLikes));
+    if (savedHasLiked)
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrating persisted client-only state after mount
+      setHasLiked(JSON.parse(savedHasLiked));
   }, []);
 
   const handleLike = (postSlug: string) => {
@@ -103,9 +106,9 @@ const BlogPostPage = () => {
   if (!post) {
     return (
       <PageTransition>
-        <div className="page-container py-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-0 py-12">
           <div className="text-center py-12">
-            <h1 className="text-4xl font-bold mb-4">Post Not Found</h1>
+            <h1 className="text-2xl md:text-4xl font-bold mb-4">Post Not Found</h1>
             <p className="text-xl text-muted-foreground mb-6">
               The blog post you&apos;re looking for doesn&apos;t exist.
             </p>
@@ -121,7 +124,7 @@ const BlogPostPage = () => {
   return (
     <PageTransition>
       <div className="bg-gradient-to-br from-background via-background to-muted/30 min-h-screen">
-        <div className="page-container py-12 pb-24">
+        <div className="max-w-7xl mx-auto px-4 lg:px-0 py-12 pb-24">
           <div className="max-w-3xl mx-auto">
             <Button
               variant="ghost"
@@ -133,9 +136,9 @@ const BlogPostPage = () => {
               </Link>
             </Button>
 
-            <article className="bg-gradient-to-br from-card to-card/95 border rounded-xl shadow-md p-8 animate-fade-in">
+            <article className="bg-gradient-to-br from-card to-card/95 border rounded-xl shadow-md p-5 md:p-8 animate-fade-in">
               <header className="mb-8">
-                <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+                <h1 className="text-lg md:text-4xl font-bold mb-4">{post.title}</h1>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <span>{post.date}</span>
                   <span>•</span>
@@ -154,16 +157,16 @@ const BlogPostPage = () => {
               </header>
 
               <div
-                className="prose dark:prose-invert max-w-none"
+                className="prose dark:prose-invert max-w-none break-words [overflow-wrap:anywhere] [&_pre]:overflow-x-auto"
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
 
-              <div className="mt-12 pt-6 border-t flex justify-between items-center">
+              <div className="mt-12 pt-6 border-t flex flex-wrap gap-y-3 justify-between items-center">
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`flex items-center gap-2 transition-all ${
+                    className={`flex items-center gap-2 min-h-11 px-3 transition-all ${
                       hasLiked[slug]
                         ? "text-red-500 border-red-200 dark:border-red-800"
                         : ""
@@ -186,7 +189,7 @@ const BlogPostPage = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 min-h-11 px-3"
                     >
                       <MessageSquare size={16} />
                       Comments
@@ -195,10 +198,10 @@ const BlogPostPage = () => {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="min-h-11 px-3">
                     Twitter
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="min-h-11 px-3">
                     LinkedIn
                   </Button>
                 </div>

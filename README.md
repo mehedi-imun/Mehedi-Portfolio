@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mehedi's Portfolio
+
+A personal portfolio website for [Mehedi](https://github.com/mehedi-imun) — showcasing projects, blog posts, experience, tools, and contact information.
+
+## About This Project
+
+This is a fully static portfolio site built with **Next.js**. There is no backend, database, or API layer — all content (blog posts, project data, experience) is hardcoded inline in page components, and interactive features like post **likes and comments persist to `localStorage`** on the visitor's browser.
+
+### Features
+
+- **Home** — animated hero with typewriter effect, featured projects, tools/skills, and contact section
+- **Projects** (`/projects`) — full project showcase
+- **Blog** (`/blog`) — statically rendered posts with per-post pages (`/blog/[slug]`), including like buttons and a comment section backed by `localStorage`
+- **Dark mode** via `next-themes` with a theme toggle
+- **Page transitions & animations** using Motion (`motion/react`)
+- Fully responsive layout
+
+## Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| [Next.js 16](https://nextjs.org) (App Router) | Framework & routing |
+| [React 19](https://react.dev) | UI library |
+| [TypeScript](https://www.typescriptlang.org) (strict) | Type safety |
+| [Tailwind CSS v4](https://tailwindcss.com) | Styling (CSS-first config in `src/app/globals.css`) |
+| [shadcn/ui](https://ui.shadcn.com) (new-york style) | UI primitives (`src/components/ui/`) |
+| [Motion](https://motion.dev) | Animations & transitions |
+| [next-themes](https://github.com/pacocoursey/next-themes) | Dark/light mode |
+| [lucide-react](https://lucide.dev) & [react-icons](https://react-icons.github.io/react-icons/) | Icons |
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev     # Start dev server (Turbopack)
+npm run build   # Production build (also type-checks)
+npm run start   # Serve production build
+npm run lint    # Run ESLint
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/                  # App Router pages
+│   ├── page.tsx          # Home page
+│   ├── projects/         # Projects page
+│   └── blog/             # Blog listing + [slug] post pages
+├── components/
+│   ├── sections/         # Hero, FeaturedProjects, Tools, Contact, Footer
+│   ├── ui/               # shadcn/ui primitives
+│   └── ...               # Header, ThemeToggle, CommentSection, etc.
+└── lib/
+    └── utils.ts          # cn() helper
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The site deploys to [Vercel](https://vercel.com) — pushes to `main` are deployed automatically. No environment variables are required.

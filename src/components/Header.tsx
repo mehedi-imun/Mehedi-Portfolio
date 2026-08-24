@@ -2,11 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Download, Menu, X } from "lucide-react";
+import { Eye, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
+
+const RESUME_URL = "https://drive.google.com/your-resume-link";
 
 const navigation = [
   { name: "Home", href: "/", isSection: false },
@@ -56,7 +58,7 @@ export default function Header() {
           href="/"
           className="text-2xl font-bold bg-gradient-to-r from-[#ff914d] to-orange-400 bg-clip-text text-transparent"
         >
-          Portfolio
+          MEHEDI
         </Link>
 
         {/* Desktop Nav */}
@@ -77,18 +79,31 @@ export default function Header() {
               {item.name}
             </Link>
           ))}
-          <Button variant={"outline"}>
-            Resume <Download></Download>
-          </Button>
+          <a
+            href={RESUME_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant={"outline"}>
+              Resume <Eye />
+            </Button>
+          </a>
           <ThemeToggle />
         </nav>
 
         {/* Mobile Menu */}
         <div className="md:hidden flex items-center">
+          <a href={RESUME_URL} target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" size="sm" aria-label="View Resume">
+              <Eye />
+            </Button>
+          </a>
           <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
             onClick={() => setIsOpen(!isOpen)}
             className="ml-2"
           >
@@ -107,7 +122,7 @@ export default function Header() {
                 href={item.href}
                 onClick={(e) => handleClick(e, item.href, item.isSection)}
                 className={cn(
-                  "block text-base font-medium transition hover:text-[#ff914d]",
+                  "block py-2 text-base font-medium transition hover:text-[#ff914d]",
                   isActive(item.href)
                     ? "text-[#ff914d]"
                     : "text-black/80 dark:text-white/80"
@@ -117,6 +132,15 @@ export default function Header() {
                 {item.name}
               </Link>
             ))}
+            <a
+              href={RESUME_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2 py-2 text-base font-medium text-black/80 dark:text-white/80 transition hover:text-[#ff914d]"
+            >
+              Resume <Eye className="h-4 w-4" />
+            </a>
           </nav>
         </div>
       )}

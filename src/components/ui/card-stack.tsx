@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
@@ -24,11 +25,6 @@ export const CardStack = ({
   const SCALE_FACTOR = scaleFactor || 0.06;
   const [cards, setCards] = useState<Card[]>(items);
 
-  useEffect(() => {
-    startFlipping();
-
-    return () => clearInterval(interval);
-  }, []);
   const startFlipping = () => {
     interval = setInterval(() => {
       setCards((prevCards: Card[]) => {
@@ -38,6 +34,12 @@ export const CardStack = ({
       });
     }, 5000);
   };
+
+  useEffect(() => {
+    startFlipping();
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="relative  h-60 w-60 md:h-60 md:w-96">

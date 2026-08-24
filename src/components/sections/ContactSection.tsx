@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Facebook, Github, LinkedinIcon, X } from "lucide-react";
+import { FaFacebook, FaGithub, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import { useState } from "react";
 
 export default function ContactSection() {
@@ -32,7 +32,7 @@ export default function ContactSection() {
   };
 
   return (
-    <section className="py-20  mx-auto  bg-muted/30" id="contact">
+    <section className="py-12 md:py-20 mx-auto  bg-muted/30" id="contact">
       <div className="max-w-7xl mx-auto px-4 lg:px-0">
         <h2 className="text-lg md:text-4xl mb-4 text-black dark:text-white max-w-4xl">Get In Touch</h2>
         <p className="text-muted-foreground max-w-2xl mb-8">
@@ -126,28 +126,28 @@ export default function ContactSection() {
                         target="_blank"
                         className="text-muted-foreground hover:text-brand"
                       >
-                        <Facebook />
+                        <FaFacebook size={24} />
                       </a>
                       <a
                         href="https://x.com/mehediimun"
                         target="_blank"
                         className="text-muted-foreground hover:text-brand"
                       >
-                        <X></X>
+                        <FaXTwitter size={24} />
                       </a>
                       <a
                         href="https://github.com/mehedi-imun"
                         target="_blank"
                         className="text-muted-foreground hover:text-brand"
                       >
-                        <Github />
+                        <FaGithub size={24} />
                       </a>
                       <a
                         href="https://www.linkedin.com/in/mehedi-imun/"
                         target="_blank"
                         className="text-muted-foreground hover:text-brand"
                       >
-                        <LinkedinIcon />
+                        <FaLinkedinIn size={24} />
                       </a>
                     </div>
                   </div>

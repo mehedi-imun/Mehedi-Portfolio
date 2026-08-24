@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+.opencode
+/openspec
+
+# opencode local config (contains Context7 API key)
+/opencode.json
+AGENTS.md

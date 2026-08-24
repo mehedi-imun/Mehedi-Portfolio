@@ -125,7 +125,7 @@ const tools: ToolCategory[] = [
 
 export default function Tools() {
   return (
-    <section className=" max-w-7xl mx-auto px-4 lg:px-0 py-20" id="tools">
+    <section className=" max-w-7xl mx-auto px-4 lg:px-0 py-12 md:py-20" id="tools">
       <div className="">
         <h2 className="text-lg md:text-4xl mb-4 text-black dark:text-white max-w-4xl">Tools & Technologies</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

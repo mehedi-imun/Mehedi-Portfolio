@@ -31,6 +31,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postSlug }) => {
   useEffect(() => {
     const savedComments = localStorage.getItem(`comments-${postSlug}`);
     if (savedComments) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrating persisted client-only state after mount
       setComments(JSON.parse(savedComments));
     }
   }, [postSlug]);
@@ -137,7 +138,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postSlug }) => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`flex items-center gap-1.5 h-8 px-2 ${
+                    className={`flex items-center gap-1.5 min-h-11 px-3 ${
                       comment.hasLiked ? "text-red-500" : ""
                     }`}
                     onClick={() => handleLikeComment(comment.id)}
@@ -151,7 +152,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ postSlug }) => {
                   </Button>
                 </div>
                 <div className="mt-2">
-                  <p className="whitespace-pre-wrap">{comment.content}</p>
+                  <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{comment.content}</p>
                 </div>
               </CardContent>
             </Card>

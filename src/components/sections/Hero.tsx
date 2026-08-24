@@ -5,10 +5,6 @@ import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  DraggableCardBody,
-  DraggableCardContainer,
-} from "../ui/draggable-card";
 
 export default function Hero() {
   const handleScroll = (id: string) => (e: React.MouseEvent) => {
@@ -28,27 +24,10 @@ export default function Hero() {
       className: "text-[#ff914d] dark:text-[#ff914d]",
     },
   ];
-  const items = [
-    {
-      title: "React",
-      image: "https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png",
-      className: "absolute top-90 left-[10%] rotate-[-5deg]",
-    },
-    {
-      title: "Next.js",
-      image: "https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png",
-      className: "absolute top-80 left-[25%] rotate-[-7deg]",
-    },
-    {
-      title: "Python",
-      image: "https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png",
-      className: "absolute top-90 left-[40%] rotate-[8deg]",
-    },
-  ];
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-0 ">
-      <section className="min-h-[90vh] flex flex-wrap items-center ">
-        <div className="page-container">
+      <section className="min-h-[60vh] md:min-h-[90vh] flex flex-wrap items-center pt-20 md:pt-0">
+        <div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Text Content */}
             <div className="animate-slide-down space-y-6">
@@ -108,35 +87,15 @@ export default function Hero() {
 
             <div className="hidden lg:block relative animate-slide-up">
               <div className="absolute inset-0 bg-gradient-to-r from-[#ff914d]/20 to-transparent rounded-lg blur-3xl opacity-100 -z-10"></div>
-              <div className="bg-gradient-to-br from-muted/30 to-transparent border border-[ff914d] backdrop-blur-sm aspect-square rounded-lg flex items-center justify-center text-6xl">
-                <div className=" flex h-full w-full items-center justify-center overflow-hidden ">
-                  <DraggableCardContainer className="relative flex min-h-full w-full items-center justify-center overflow-clip">
-                    {items.map((item) => (
-                      <DraggableCardBody
-                        key={item.title}
-                        className={item.className}
-                      >
-                        <Image
-                          src={item.image}
-                          alt={item.title}
-                          className="pointer-events-none relative z-10 w-80 h-80 object-cover"
-                          width={800}
-                          height={800}
-                        />
-                      </DraggableCardBody>
-                    ))}
-                    <Image
-                      src="https://i.ibb.co.com/93wSjCPM/IMG-2129-removebg-preview.png"
-                      width={900}
-                      height={900}
-                      alt="Picture of the author"
-                    />
-                  </DraggableCardContainer>
-
-                  <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-transparent via-[#ff914d]/40 to-transparent rounded-full blur-sm">
-                    {" "}
-                  </div>
-                </div>
+              <div className="bg-gradient-to-br from-muted/30 to-transparent border border-[ff914d] backdrop-blur-sm aspect-square rounded-lg overflow-hidden flex items-end justify-center text-6xl">
+                <Image
+                  src="/hero-portrait.png"
+                  width={900}
+                  height={900}
+                  priority
+                  alt="Picture of the author"
+                  className="h-full w-full object-contain object-bottom scale-x-110 origin-bottom"
+                />
               </div>
             </div>
           </div>
