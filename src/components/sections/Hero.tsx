@@ -92,7 +92,8 @@ export default function Hero() {
                   width={900}
                   height={900}
                   priority
-                  alt="Picture of the author"
+                  sizes="(max-width: 1024px) 0px, 50vw"
+                  alt="Mehedi Imun, full stack web developer based in Dhaka, Bangladesh"
                   className="h-full w-full object-contain object-bottom scale-x-110 origin-bottom"
                 />
               </div>

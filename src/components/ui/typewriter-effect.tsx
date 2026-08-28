@@ -110,78 +110,33 @@ export const TypewriterEffectSmooth = ({
   className?: string;
   cursorClassName?: string;
 }) => {
-  // split text inside of words into array of characters
-  const wordsArray = words.map((word) => {
-    return {
-      ...word,
-      text: word.text.split(""),
-    };
-  });
-  const renderWords = () => {
-    return (
-      <div>
-        {wordsArray.map((word, idx) => {
-          return (
-            <div key={`word-${idx}`} className="inline-block">
-              {word.text.map((char, index) => (
-                <span
-                  key={`char-${index}`}
-                  className={cn(`dark:text-white text-black `, word.className)}
-                >
-                  {char}
-                </span>
-              ))}
-              &nbsp;
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
   return (
     <div className={cn("flex space-x-1 my-6", className)}>
-      <motion.div
-        className="overflow-hidden pb-2"
-        initial={{
-          width: "0%",
-        }}
-        whileInView={{
-          width: "fit-content",
-        }}
-        transition={{
-          duration: 1,
-          ease: "linear",
-          delay: 0.3,
-        }}
+      {/*
+        One span per word rather than per character: the reveal is a clip-path
+        wipe, so splitting into characters gained nothing visually while
+        fragmenting the heading text.
+      */}
+      <div
+        className="animate-typewriter-reveal overflow-hidden pb-2 text-inherit font-bold"
+        style={{ whiteSpace: "nowrap" }}
       >
-        <div
-          className="text-inherit font-bold"
-          style={{
-            whiteSpace: "nowrap",
-          }}
-        >
-          {renderWords()}{" "}
-        </div>{" "}
-      </motion.div>
-      <motion.span
-        initial={{
-          opacity: 0,
-        }}
-        animate={{
-          opacity: 1,
-        }}
-        transition={{
-          duration: 0.8,
-
-          repeat: Infinity,
-          repeatType: "reverse",
-        }}
+        {words.map((word, idx) => (
+          <span
+            key={`word-${idx}`}
+            className={cn("dark:text-white text-black", word.className)}
+          >
+            {word.text}
+            {idx < words.length - 1 ? " " : ""}
+          </span>
+        ))}
+      </div>
+      <span
         className={cn(
-          "block rounded-sm w-[4px] h-[1em] self-center bg-blue-500",
+          "animate-caret-blink block rounded-sm w-[4px] h-[1em] self-center bg-blue-500",
           cursorClassName
         )}
-      ></motion.span>
+      />
     </div>
   );
 };

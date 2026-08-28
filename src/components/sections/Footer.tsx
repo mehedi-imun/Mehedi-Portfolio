@@ -65,18 +65,18 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Connect</h3>
             <div className="flex space-x-4">
-            <a href="https://www.facebook.com/mehediimun" className="text-muted-foreground hover:text-brand" target="_blank" >
+            <a href="https://www.facebook.com/mehediimun" className="text-muted-foreground hover:text-brand" target="_blank" rel="noopener noreferrer">
               
               Facebook
             </a>
-              <a href="https://x.com/mehediimun" className="text-muted-foreground hover:text-brand" target="_blank" >
+              <a href="https://x.com/mehediimun" className="text-muted-foreground hover:text-brand" target="_blank" rel="noopener noreferrer">
               
                 X
               </a>
-              <a href="https://github.com/mehedi-imun" className="text-muted-foreground hover:text-brand" target="_blank" >
+              <a href="https://github.com/mehedi-imun" className="text-muted-foreground hover:text-brand" target="_blank" rel="noopener noreferrer">
                 GitHub
               </a>
-              <a href="https://www.linkedin.com/in/mehedi-imun/" className="text-muted-foreground hover:text-brand" target="_blank" >
+              <a href="https://www.linkedin.com/in/mehedi-imun/" className="text-muted-foreground hover:text-brand" target="_blank" rel="noopener noreferrer">
                 LinkedIn
               </a>
             </div>

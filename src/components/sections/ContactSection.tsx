@@ -108,7 +108,7 @@ export default function ContactSection() {
                   <div>
                     <p className="font-medium">Email</p>
                     <a
-                      href="mailto:hello@example.com"
+                      href="mailto:mehediimun@gmail.com"
                       className="text-muted-foreground hover:text-brand"
                     >
                       mehediimun@gmail.com
@@ -124,6 +124,7 @@ export default function ContactSection() {
                       <a
                         href="https://www.facebook.com/mehediimun"
                         target="_blank"
+                        rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-brand"
                       >
                         <FaFacebook size={24} />
@@ -131,6 +132,7 @@ export default function ContactSection() {
                       <a
                         href="https://x.com/mehediimun"
                         target="_blank"
+                        rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-brand"
                       >
                         <FaXTwitter size={24} />
@@ -138,6 +140,7 @@ export default function ContactSection() {
                       <a
                         href="https://github.com/mehedi-imun"
                         target="_blank"
+                        rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-brand"
                       >
                         <FaGithub size={24} />
@@ -145,6 +148,7 @@ export default function ContactSection() {
                       <a
                         href="https://www.linkedin.com/in/mehedi-imun/"
                         target="_blank"
+                        rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-brand"
                       >
                         <FaLinkedinIn size={24} />

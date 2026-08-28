@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,40 +12,47 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
-import { featuredProjects } from "@/lib/projects";
+import { projectCategories, type Project } from "@/lib/projects";
 
-export default function FeaturedProjects() {
+/**
+ * Category filter and card grid. Client-only so app/projects/page.tsx can stay
+ * a server component and export metadata.
+ */
+export default function ProjectsGrid({ projects }: { projects: Project[] }) {
+  const [activeCategory, setActiveCategory] = useState<string>("All");
+
+  const filteredProjects =
+    activeCategory === "All"
+      ? projects
+      : projects.filter((project) => project.category === activeCategory);
+
   return (
-    <section className="py-20 max-w-7xl mx-auto px-4 lg:px-0" id="projects">
-      <div className="page-container">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12">
-          <div>
-            <h2 className="text-lg md:text-4xl mb-4 text-black dark:text-white max-w-4xl">
-              Featured Projects
-            </h2>
-            <p className="text-muted-foreground max-w-2xl">
-              Check out some of my recent work.
-            </p>
-          </div>
-          <Button variant="outline" asChild className="mt-4 md:mt-0">
-            <Link href="/projects">View All Projects</Link>
+    <>
+      <div className="flex flex-wrap gap-2 mb-8">
+        {projectCategories.map((category) => (
+          <Button
+            key={category}
+            variant={activeCategory === category ? "default" : "outline"}
+            size="sm"
+            aria-pressed={activeCategory === category}
+            onClick={() => setActiveCategory(category)}
+          >
+            {category}
           </Button>
-        </div>
+        ))}
+      </div>
 
+      {filteredProjects.length === 0 ? (
+        <p className="text-xl text-muted-foreground py-12 text-center">
+          No projects in this category yet.
+        </p>
+      ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredProjects.map((project) => (
+          {filteredProjects.map((project) => (
             <Card
               key={project.id}
-              className=" hover:shadow-md transition-shadow relative"
+              className="overflow-hidden hover:shadow-md transition-shadow"
             >
-              <GlowingEffect
-                spread={40}
-                glow={true}
-                disabled={false}
-                proximity={64}
-                inactiveZone={0.01}
-              />
               <div className="aspect-video relative overflow-hidden">
                 <Image
                   src={project.image}
@@ -77,13 +87,15 @@ export default function FeaturedProjects() {
               </CardContent>
               <CardFooter>
                 <Button variant="outline" asChild className="w-full">
-                  <Link href={`/projects/${project.slug}`}>View Project</Link>
+                  <Link href={`/projects/${project.slug}`}>
+                    View {project.title}
+                  </Link>
                 </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
-      </div>
-    </section>
+      )}
+    </>
   );
 }

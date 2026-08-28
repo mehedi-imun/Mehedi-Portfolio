@@ -17,7 +17,11 @@ export function GridBackgroundDemo({children}: {children: React.ReactNode}) {
         
       </div>
       
-     <div className="z-40"> {children}</div>
+      {/*
+        w-full is required: this is a shrink-to-fit flex child, so without it the
+        content collapses to its max-content width instead of filling the row.
+      */}
+      <div className="z-40 w-full">{children}</div>
     </div>
   );
 }

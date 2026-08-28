@@ -2,7 +2,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { animate, motion } from "motion/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 interface Tool {
   category: string;
   items: { icon: React.ReactNode }[];
@@ -93,21 +93,39 @@ const Skeleton = ({ children }: { children: React.ReactNode }) => {
     </div>
   );
 };
-/* eslint-disable react-hooks/purity -- decorative star field; random values are intentionally regenerated per render */
+// Deterministic PRNG (mulberry32) instead of Math.random(): the star field is
+// server-rendered, so random inline styles would differ between SSR and
+// hydration and trip React's hydration mismatch warning. Integer-only ops keep
+// the sequence bit-identical across JS engines.
+const seededRandom = (seed: number) => {
+  let state = seed;
+  return () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+
+const round = (value: number) => Math.round(value * 100) / 100;
+
+const STARS = (() => {
+  const next = seededRandom(0x5eed);
+  return Array.from({ length: 12 }, (_, i) => ({
+    key: `star-${i}`,
+    top: round(next() * 100),
+    left: round(next() * 100),
+    dx: round(next() * 2 - 1),
+    opacity: round(next()),
+    duration: round(next() * 2 + 4),
+  }));
+})();
+
 const Sparkles = () => {
-  const [stars] = useState(
-    Array.from({ length: 12 }, (_, i) => ({
-      key: `star-${i}`,
-      top: Math.random() * 100,
-      left: Math.random() * 100,
-      dx: Math.random() * 2 - 1,
-      opacity: Math.random(),
-      duration: Math.random() * 2 + 4,
-    }))
-  );
   return (
     <div className="absolute inset-0">
-      {stars.map((star) => (
+      {STARS.map((star) => (
         <motion.span
           key={star.key}
           animate={{

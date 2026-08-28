@@ -1,17 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { Eye, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 
-const RESUME_URL = "https://drive.google.com/your-resume-link";
+const RESUME_URL = siteConfig.resumeUrl;
 
 const navigation = [
   { name: "Home", href: "/", isSection: false },
+  { name: "About", href: "/about", isSection: false },
   { name: "Projects", href: "/#projects", isSection: true },
   { name: "Experience", href: "/#experience", isSection: true },
   { name: "Tools", href: "/#tools", isSection: true },
@@ -22,7 +24,17 @@ const navigation = [
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const hash = typeof window !== "undefined" ? window.location.hash : "";
+  // Read on the client only, after mount: the server has no location, so
+  // deriving it during render would desync the active-link classes/aria-current
+  // on hydration.
+  const [hash, setHash] = useState("");
+
+  useEffect(() => {
+    const syncHash = () => setHash(window.location.hash);
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+    return () => window.removeEventListener("hashchange", syncHash);
+  }, []);
 
   // Handle smooth scroll to section
   const handleClick = (
