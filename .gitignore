@@ -46,4 +46,3 @@ next-env.d.ts
 
 # opencode local config (contains Context7 API key)
 /opencode.json
-AGENTS.md
