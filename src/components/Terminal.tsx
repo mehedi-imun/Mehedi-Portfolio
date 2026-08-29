@@ -36,6 +36,18 @@ const TYPING_INTERVAL_MS = 24;
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
+/*
+ * The idle demo. It types and runs these on a loop so the panel is doing
+ * something when the page loads, rather than sitting as a dead prompt nobody
+ * realises is live. Read-only commands only -- anything with a navigate,
+ * openExternal or setTheme effect would hijack the page on its own.
+ */
+const DEMO_SCRIPT = ["whoami", "stack", "ls projects", "experience"] as const;
+const DEMO_KEYSTROKE_MS = 70;
+const DEMO_BEFORE_ENTER_MS = 380;
+const DEMO_AFTER_OUTPUT_MS = 1600;
+const DEMO_FIRST_RUN_MS = 1100;
+
 type Entry = {
   id: number;
   /** Absent for output the terminal printed on its own. */
@@ -243,10 +255,24 @@ export default function Terminal({ context }: { context: TerminalContext }) {
   const [typing, setTyping] = useState<Typing | null>(null);
   const [highlight, setHighlight] = useState(0);
   const [dismissed, setDismissed] = useState(false);
+  /*
+   * `hovering` pauses the demo for as long as the pointer is over the panel --
+   * hover is the handover, so what sits under the cursor is a plain terminal.
+   * `engaged` is permanent: once someone has actually typed or run something,
+   * the demo must never come back and type over them.
+   */
+  const [hovering, setHovering] = useState(false);
+  const [engaged, setEngaged] = useState(false);
 
   const typingId = typing?.id ?? null;
   const typingSteps = typing?.steps ?? 0;
   const typingTotal = typing?.total ?? 0;
+
+  /*
+   * Reduced motion opts out entirely: an unprompted animation that also moves
+   * the scroll position is exactly what that preference is asking us not to do.
+   */
+  const demoRunning = !reducedMotion && !engaged && !hovering;
 
   const suggestions = useMemo(
     () => suggestInput(input, context),
@@ -270,6 +296,7 @@ export default function Terminal({ context }: { context: TerminalContext }) {
    * ghost has nothing to show, so a single argument candidate is worth listing.
    */
   const paletteOpen =
+    !demoRunning &&
     !dismissed &&
     input.trim().length > 0 &&
     suggestions.length > (token.length === 0 ? 0 : 1);
@@ -330,13 +357,12 @@ export default function Terminal({ context }: { context: TerminalContext }) {
     inputRef.current?.focus();
   };
 
-  const submit = () => {
-    const command = input;
-    setInput("");
-    setHistoryIndex(null);
-    resetSuggestions();
-    if (command.trim()) setHistory((current) => [...current, command.trim()]);
-
+  /*
+   * The execution path, independent of where the command came from. The idle
+   * demo drives this directly rather than going through the input, so it never
+   * has to fake keystrokes into React state to get a command to run.
+   */
+  const runLine = (command: string) => {
     const result = runCommand(command, context);
 
     if (result.effect?.type === "clear") {
@@ -364,6 +390,77 @@ export default function Terminal({ context }: { context: TerminalContext }) {
         break;
     }
   };
+
+  const submit = () => {
+    const command = input;
+    setInput("");
+    setHistoryIndex(null);
+    resetSuggestions();
+    setEngaged(true);
+    if (command.trim()) setHistory((current) => [...current, command.trim()]);
+    runLine(command);
+  };
+
+  /*
+   * Kept in a ref so the demo effect can call the latest closure without
+   * listing it as a dependency -- naming runLine there would tear the loop down
+   * and restart it on every render, which is every keystroke it types.
+   */
+  const runLineRef = useRef(runLine);
+  useEffect(() => {
+    runLineRef.current = runLine;
+  });
+
+  /*
+   * The demo itself. Every state write happens inside a timer continuation
+   * rather than in the effect body, so this drives the same input and the same
+   * execution path a person would, one keystroke at a time.
+   */
+  useEffect(() => {
+    if (!demoRunning) return;
+
+    let cancelled = false;
+    const timers = new Set<number>();
+    const wait = (ms: number) =>
+      new Promise<void>((resolve) => {
+        const id = window.setTimeout(() => {
+          timers.delete(id);
+          resolve();
+        }, ms);
+        timers.add(id);
+      });
+
+    void (async () => {
+      await wait(DEMO_FIRST_RUN_MS);
+
+      for (let cycle = 0; !cancelled; cycle += 1) {
+        // Wipe between passes so the transcript cannot grow without bound.
+        if (cycle > 0) runLineRef.current("clear");
+
+        for (const command of DEMO_SCRIPT) {
+          for (let i = 1; i <= command.length; i += 1) {
+            if (cancelled) return;
+            setInput(command.slice(0, i));
+            await wait(DEMO_KEYSTROKE_MS);
+          }
+
+          await wait(DEMO_BEFORE_ENTER_MS);
+          if (cancelled) return;
+
+          setInput("");
+          runLineRef.current(command);
+          await wait(DEMO_AFTER_OUTPUT_MS);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      timers.forEach((id) => window.clearTimeout(id));
+      // Never leave a half-typed demo command sitting in someone's prompt.
+      setInput("");
+    };
+  }, [demoRunning]);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -445,7 +542,25 @@ export default function Terminal({ context }: { context: TerminalContext }) {
   const last = entries[entries.length - 1];
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-xl shadow-foreground/[0.06]">
+    /*
+     * The widget names itself rather than relying on a wrapping section to do
+     * it. It used to sit under a heading that supplied both the landmark and
+     * the explanation; in the hero there is no such heading, and without this
+     * a screen reader walks straight into the role="log" of boot output with
+     * nothing saying what it is.
+     */
+    <div
+      role="region"
+      aria-label="Interactive terminal - explore this site's data from the command line"
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+      /*
+       * Focus is a one-way handover, not a hover: a keyboard user who tabs in
+       * has committed, and the pointer may never come near the panel.
+       */
+      onFocusCapture={() => setEngaged(true)}
+      className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-xl shadow-foreground/[0.06]"
+    >
       {/* A brand hairline along the top edge, the way a focused window reads. */}
       <span
         aria-hidden
@@ -474,7 +589,12 @@ export default function Terminal({ context }: { context: TerminalContext }) {
       <div
         ref={screenRef}
         onClick={() => inputRef.current?.focus()}
-        className="terminal-scroll max-h-[26rem] min-h-[18rem] overflow-y-auto p-4 font-mono text-sm leading-relaxed"
+        /*
+         * A fixed height, not a min/max range. The demo is continuously adding
+         * and clearing output, and a panel that grew and collapsed with it
+         * would shove the whole hero around several times a minute.
+         */
+        className="terminal-scroll h-[17rem] overflow-y-auto p-4 font-mono text-sm leading-relaxed sm:h-[19rem]"
       >
         <div
           role="log"
@@ -532,6 +652,7 @@ export default function Terminal({ context }: { context: TerminalContext }) {
                 setInput(event.target.value);
                 setHistoryIndex(null);
                 resetSuggestions();
+                setEngaged(true);
               }}
               onKeyDown={handleKeyDown}
               role="combobox"

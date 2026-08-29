@@ -1,11 +1,12 @@
 "use client";
 
-import HeroPhoto from "@/components/HeroPhoto";
 import LiveCode from "@/components/LiveCode";
+import Terminal from "@/components/Terminal";
 import RoleCycler from "@/components/RoleCycler";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/section";
 import { siteConfig } from "@/lib/site";
+import type { TerminalContext } from "@/lib/terminal-commands";
 import Link from "next/link";
 
 const ROLES = [
@@ -29,14 +30,19 @@ const HEADLINE = [
   "that stay online",
 ];
 
-export default function Hero() {
+/*
+ * `context` is built on the server in page.tsx and forwarded through: Terminal
+ * is a client component and can never read lib/projects or lib/blog itself,
+ * since both hit the filesystem at module scope.
+ */
+export default function Hero({ context }: { context: TerminalContext }) {
   const scrollTo = (id: string) => (event: React.MouseEvent) => {
     event.preventDefault();
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <section className="grain relative flex min-h-[92svh] items-center overflow-hidden pt-36 pb-16">
+    <section className="grain relative flex min-h-[80svh] items-center overflow-hidden pt-28 pb-12">
       <div
         aria-hidden
         className="pointer-events-none absolute -left-[10%] -top-[20%] h-[60vh] w-[60vw] rounded-full bg-brand-accent/10 blur-[120px]"
@@ -56,7 +62,7 @@ export default function Hero() {
          */}
         <LiveCode className="pointer-events-none absolute -top-20 left-[26%] hidden w-[620px] select-none whitespace-pre font-mono text-[15px] leading-[28.5px] text-brand/35 [mask-image:radial-gradient(ellipse_at_center,black_45%,transparent_85%)] lg:block" />
 
-        <div className="relative grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,634px)_1fr]">
+        <div className="relative grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,40rem)]">
           <div className="relative">
             <h1 className="relative">
               <span className="animate-rise-in block text-lg text-muted-foreground md:text-xl">
@@ -64,7 +70,7 @@ export default function Hero() {
                 <span className="font-medium text-brand">{siteConfig.name}</span>
               </span>
 
-              <span className="mt-5 block text-[clamp(2.35rem,4.9vw,4.4rem)] font-medium leading-[0.98] tracking-[-0.03em]">
+              <span className="mt-4 block text-[clamp(2.1rem,3.6vw,3.25rem)] font-medium leading-[1.02] tracking-[-0.03em]">
                 {HEADLINE.map((line, i) => (
                   <span
                     key={line}
@@ -78,7 +84,7 @@ export default function Hero() {
             </h1>
 
             <p
-              className="animate-rise-in mt-7 font-mono text-sm tracking-[0.18em] text-muted-foreground"
+              className="animate-rise-in mt-5 font-mono text-sm tracking-[0.18em] text-muted-foreground"
               style={{ animationDelay: "500ms" }}
             >
               I BUILD{" "}
@@ -90,7 +96,7 @@ export default function Hero() {
             </p>
 
             <p
-              className="animate-rise-in mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground"
+              className="animate-rise-in mt-4 max-w-xl text-base leading-relaxed text-muted-foreground"
               style={{ animationDelay: "580ms" }}
             >
               Four years across React, Next.js, Node and PostgreSQL — interfaces
@@ -99,7 +105,7 @@ export default function Hero() {
             </p>
 
             <div
-              className="animate-rise-in mt-8 flex flex-wrap items-center gap-3"
+              className="animate-rise-in mt-6 flex flex-wrap items-center gap-3"
               style={{ animationDelay: "660ms" }}
             >
               <Button asChild size="lg" className="rounded-full px-7">
@@ -120,7 +126,7 @@ export default function Hero() {
             </div>
 
             <p
-              className="animate-rise-in mt-6 inline-flex items-center gap-3 rounded-full border border-border px-4 py-2 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground"
+              className="animate-rise-in mt-5 inline-flex items-center gap-3 rounded-full border border-border px-4 py-2 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground"
               style={{ animationDelay: "740ms" }}
             >
               <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-brand" />
@@ -128,18 +134,17 @@ export default function Hero() {
             </p>
           </div>
 
+          {/*
+           * The terminal is the hero image. It boots having already run `help`,
+           * so it introduces itself without the section heading it used to sit
+           * under -- and unlike a photo it demonstrates the claim in the h1
+           * beside it rather than decorating it.
+           */}
           <div
-            className="animate-rise-in relative mx-auto w-full max-w-sm lg:max-w-none"
+            className="animate-rise-in relative mx-auto w-full max-w-2xl lg:max-w-none"
             style={{ animationDelay: "300ms" }}
           >
-            {/*
-             * Faded into the page at its edges rather than sitting in a framed
-             * box -- the frame was the most template-looking thing here.
-             */}
-            <HeroPhoto
-              className="w-full"
-              alt={`${siteConfig.name} at his desk`}
-            />
+            <Terminal context={context} />
           </div>
         </div>
       </Container>

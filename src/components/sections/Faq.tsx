@@ -26,7 +26,7 @@ export default function Faq() {
       <Reveal>
         <SectionHeading
           id="faq-heading"
-          index="08"
+          index="07"
           eyebrow="FAQ"
           title="What people usually ask"
           lead="The questions that come up before every engagement, answered up front."

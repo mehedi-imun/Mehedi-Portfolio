@@ -63,7 +63,7 @@ export default function ContactSection() {
       <Reveal>
         <SectionHeading
           id="contact-heading"
-          index="09"
+          index="08"
           eyebrow="Contact"
           title="Get In Touch"
           lead="Have a question or want to work together? Send a message and I will get back to you."
