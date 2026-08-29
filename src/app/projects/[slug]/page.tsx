@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
 import { ContentImage, mdxComponents } from "@/components/mdx-components";
 import { Button } from "@/components/ui/button";
+import { coverGradient } from "@/lib/content";
 import { mdxOptions } from "@/lib/mdx";
 import { getProjectBySlug, getProjectNeighbours, projects } from "@/lib/projects";
 import { breadcrumbSchema, projectSchema } from "@/lib/seo";
@@ -91,14 +92,23 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           </header>
 
           <div className="relative aspect-video rounded-xl overflow-hidden border mb-10">
-            <Image
-              src={project.cover}
-              alt={project.coverAlt}
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 768px"
-              className="object-cover"
-            />
+            {project.cover ? (
+              <Image
+                src={project.cover}
+                alt={project.coverAlt ?? ""}
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 768px"
+                className="object-cover"
+              />
+            ) : (
+              // No screenshot yet; a tinted panel keeps the page composed
+              // rather than opening on an empty bordered box.
+              <div
+                className="h-full w-full"
+                style={{ backgroundImage: coverGradient(project.slug) }}
+              />
+            )}
           </div>
 
           {/*

@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { coverGradient } from "@/lib/content";
 import { featuredProjects } from "@/lib/projects";
 
 export default function FeaturedProjects() {
@@ -51,13 +52,20 @@ export default function FeaturedProjects() {
                 inactiveZone={0.01}
               />
               <div className="aspect-video relative overflow-hidden">
-                <Image
-                  src={project.cover}
-                  alt={project.coverAlt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-500 hover:scale-105"
-                />
+                {project.cover ? (
+                  <Image
+                    src={project.cover}
+                    alt={project.coverAlt ?? ""}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                  />
+                ) : (
+                  <div
+                    className="h-full w-full"
+                    style={{ backgroundImage: coverGradient(project.slug) }}
+                  />
+                )}
               </div>
               <CardHeader>
                 <CardTitle>

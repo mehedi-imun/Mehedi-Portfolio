@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { coverGradient } from "@/lib/content";
 import type { Project } from "@/lib/projects";
 
 /**
@@ -67,13 +68,20 @@ export default function ProjectsGrid({
               className="overflow-hidden hover:shadow-md transition-shadow"
             >
               <div className="aspect-video relative overflow-hidden">
-                <Image
-                  src={project.cover}
-                  alt={project.coverAlt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-500 hover:scale-105"
-                />
+                {project.cover ? (
+                  <Image
+                    src={project.cover}
+                    alt={project.coverAlt ?? ""}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                  />
+                ) : (
+                  <div
+                    className="h-full w-full"
+                    style={{ backgroundImage: coverGradient(project.slug) }}
+                  />
+                )}
               </div>
               <CardHeader>
                 <CardTitle>

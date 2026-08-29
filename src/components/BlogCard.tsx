@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { coverGradient } from "@/lib/content";
 import Link from "next/link";
 import {
   Card,
@@ -24,21 +25,7 @@ interface BlogCardProps {
   };
 }
 
-/**
- * Deterministic hue from the slug, so a post without a cover still gets its own
- * recognisable tile and keeps the same one on every render and every visitor.
- */
-function hueFor(slug: string): number {
-  let hash = 0;
-  for (let i = 0; i < slug.length; i++) {
-    hash = (hash * 31 + slug.charCodeAt(i)) % 360;
-  }
-  return hash;
-}
-
 export default function BlogCard({ post }: BlogCardProps) {
-  const hue = hueFor(post.slug);
-
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
       {/*
@@ -69,11 +56,7 @@ export default function BlogCard({ post }: BlogCardProps) {
            */
           <div
             className="h-full w-full"
-            style={{
-              backgroundImage: `linear-gradient(135deg, oklch(0.45 0.09 ${hue}), oklch(0.28 0.06 ${
-                (hue + 40) % 360
-              }))`,
-            }}
+            style={{ backgroundImage: coverGradient(post.slug) }}
           />
         )}
       </Link>

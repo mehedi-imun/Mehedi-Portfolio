@@ -20,6 +20,24 @@ export function isRemoteAsset(src: string): boolean {
 }
 
 /**
+ * Deterministic hue from a slug, so an entry with no cover image still gets its
+ * own recognisable tile and keeps the same one on every render and every
+ * visitor. Shared by the blog and project cards so the two cannot drift.
+ */
+export function hueForSlug(slug: string): number {
+  let hash = 0;
+  for (let i = 0; i < slug.length; i++) {
+    hash = (hash * 31 + slug.charCodeAt(i)) % 360;
+  }
+  return hash;
+}
+
+export function coverGradient(slug: string): string {
+  const hue = hueForSlug(slug);
+  return `linear-gradient(135deg, oklch(0.45 0.09 ${hue}), oklch(0.28 0.06 ${(hue + 40) % 360}))`;
+}
+
+/**
  * A bare `hero.png` would be resolved by the browser relative to the current
  * URL, so it would appear to work on one page and 404 on another. Rejecting it
  * outright is clearer than letting that through.

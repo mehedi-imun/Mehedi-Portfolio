@@ -14,8 +14,10 @@ export interface Project {
   description: string;
   tags: string[];
   /** Absolute URL or public-relative path. */
-  cover: string;
-  coverAlt: string;
+  /** Optional. Without one the card falls back to a generated tile. */
+  cover?: string;
+  /** Required whenever `cover` is set. */
+  coverAlt?: string;
   category: string;
   year: string;
   role: string;
@@ -41,25 +43,26 @@ const PROJECTS_DIR = join(process.cwd(), "content", "projects");
 /** The homepage grid is lg:grid-cols-3; a 4th featured card would sit alone. */
 const FEATURED_LIMIT = 3;
 
-const frontmatterSchema = z.object({
-  // Optional: the filename is used when this is absent, so existing projects
-  // keep their URLs without being edited.
-  slug: z.string().min(1).optional(),
-  title: z.string().min(1),
-  excerpt: z.string().min(1),
-  description: z.string().min(1),
-  tags: z.array(z.string().min(1)).min(1),
-  cover: z.string().min(1),
-  coverAlt: z.string().min(1),
-  category: z.string().min(1),
-  year: z.string().regex(/^\d{4}$/, "must be a four-digit year"),
-  role: z.string().min(1),
-  stack: z.array(z.string().min(1)).min(1),
-  liveUrl: z.url().optional(),
-  repoUrl: z.url().optional(),
-  timeline: z.string().min(1).optional(),
-  outcomes: z.array(z.string().min(1)).min(1).optional(),
-  gallery: z
+const frontmatterSchema = z
+  .object({
+    // Optional: the filename is used when this is absent, so existing projects
+    // keep their URLs without being edited.
+    slug: z.string().min(1).optional(),
+    title: z.string().min(1),
+    excerpt: z.string().min(1),
+    description: z.string().min(1),
+    tags: z.array(z.string().min(1)).min(1),
+    cover: z.string().min(1).optional(),
+    coverAlt: z.string().min(1).optional(),
+    category: z.string().min(1),
+    year: z.string().regex(/^\d{4}$/, "must be a four-digit year"),
+    role: z.string().min(1),
+    stack: z.array(z.string().min(1)).min(1),
+    liveUrl: z.url().optional(),
+    repoUrl: z.url().optional(),
+    timeline: z.string().min(1).optional(),
+    outcomes: z.array(z.string().min(1)).min(1).optional(),
+    gallery: z
     .array(
       z.object({
         src: z.string().min(1),
@@ -71,10 +74,14 @@ const frontmatterSchema = z.object({
     )
     .min(1)
     .optional(),
-  featured: z.boolean().optional(),
-  order: z.number().int().optional(),
-  draft: z.boolean().optional(),
-});
+    featured: z.boolean().optional(),
+    order: z.number().int().optional(),
+    draft: z.boolean().optional(),
+  })
+  .refine((data) => !data.cover || Boolean(data.coverAlt), {
+    path: ["coverAlt"],
+    message: "is required when `cover` is set",
+  });
 
 function parseProject(fileName: string): Project {
   const { data, content } = matter(readFileSync(join(PROJECTS_DIR, fileName), "utf8"));
@@ -93,7 +100,7 @@ function parseProject(fileName: string): Project {
   const slug = resolveSlug(frontmatterSlug, fileName, "content/projects");
 
   const context = `content/projects/${fileName}`;
-  assertAssetPath(fields.cover, context);
+  if (fields.cover) assertAssetPath(fields.cover, context);
   fields.gallery?.forEach((item) => assertAssetPath(item.src, context));
 
   return {
@@ -181,5 +188,7 @@ export const projectCategories: string[] = [
  * relative URL for any project with a local cover.
  */
 export function projectOgImage(project: Project): string {
+  // Without a real cover, the generated card is the only image there is.
+  if (!project.cover) return absoluteUrl(`/projects/${project.slug}/opengraph-image`);
   return project.cover.startsWith("http") ? project.cover : absoluteUrl(project.cover);
 }
