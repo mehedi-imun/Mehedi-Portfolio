@@ -1,0 +1,70 @@
+---
+title: "Building a Custom React Hook"
+description: "A step-by-step guide to writing custom React hooks: extracting stateful logic, handling cleanup, avoiding stale closures and knowing when not to write one."
+excerpt: "A step-by-step guide to creating your own custom React hooks for reusable logic."
+date: "2025-04-15"
+tags: ["React", "Hooks", "JavaScript"]
+---
+
+<p className="lead">A custom hook is a function whose name starts with <code>use</code> and which calls other hooks. That is the entire specification. The interesting question is not how to write one, but when a hook is the right shape for the problem.</p>
+
+## Extracting your first hook
+
+Take a component that persists a value to local storage. The logic is three concerns tangled together: reading the initial value, writing on change, and exposing a setter. Pulled out, it becomes:
+
+```js
+function useLocalStorage(key, initialValue) {
+  const [value, setValue] = useState(initialValue)
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(key)
+    if (stored !== null) setValue(JSON.parse(stored))
+  }, [key])
+
+  useEffect(() => {
+    window.localStorage.setItem(key, JSON.stringify(value))
+  }, [key, value])
+
+  return [value, setValue]
+}
+```
+
+Note that the initial read happens in an effect rather than in `useState`. Reading local storage during render would produce different output on the server than in the browser, and hydration would mismatch.
+
+## Always clean up
+
+Any hook that subscribes to something must unsubscribe. An effect's return value is its cleanup function, and React calls it before re-running the effect and on unmount:
+
+```js
+useEffect(() => {
+  const controller = new AbortController()
+  fetch(url, { signal: controller.signal })
+    .then((r) => r.json())
+    .then(setData)
+    .catch((e) => { if (e.name !== "AbortError") setError(e) })
+  return () => controller.abort()
+}, [url])
+```
+
+Without the abort, a fast sequence of prop changes leaves several requests in flight and whichever resolves last wins. That is the classic race that shows up as the wrong data flashing on screen.
+
+## The stale closure trap
+
+An effect closes over the values from the render in which it ran. If it reads state but that state is not in the dependency array, it keeps reading the old value forever. Two ways out:
+
+- Use the functional form of the setter so you never need to read the current value.
+- Keep the value in a ref when you genuinely need the latest value without re-subscribing.
+
+Do not silence the exhaustive-deps lint rule to make the warning go away. It is almost always describing a real bug.
+
+## Stable return values
+
+If your hook returns an object or a function, it returns a new one on every render. Any consumer that memoises on it will invalidate constantly. Wrap returned functions in `useCallback` and returned objects in `useMemo`, or return a tuple of primitives and let the consumer decide.
+
+## Rules that are not style preferences
+
+Hooks must be called unconditionally, at the top level, in the same order every render. React identifies hook state by call order, not by name, so a hook inside a conditional shifts every subsequent hook's identity. This is why the naming convention matters: the linter uses the `use` prefix to know which functions to check.
+
+## When not to write a hook
+
+Hooks are for reusing *stateful* logic. If your function does not call another hook, make it a plain function - it will be easier to test and callable from anywhere. And if the logic is used in exactly one component and is not likely to spread, leaving it inline is often clearer than the indirection of a hook.

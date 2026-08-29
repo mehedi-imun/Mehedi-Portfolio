@@ -7,7 +7,7 @@ Personal portfolio site for Mehedi Imun (mehedi-imun). Fully static — no backe
 ## Stack
 
 - Next.js 16 (App Router, Turbopack default) + React 19, TypeScript `strict`
-- Tailwind CSS **v4** — CSS-first config: all theme tokens live in `src/app/globals.css` (`@theme inline` + `:root`). There is **no** `tailwind.config.*` file.
+- Tailwind CSS **v4** — CSS-first config: all theme tokens live in `src/app/globals.css` (`@theme inline` + `:root`). There is **no** `tailwind.config.*` file. Plugins are registered in CSS too — `@plugin "@tailwindcss/typography";` sits directly under the `@import` lines.
 - shadcn/ui (`new-york` style, see `components.json`) — primitives in `src/components/ui/`, add new ones via `npx shadcn@latest add <component>`
 - `motion` v13 (`motion/react`, not `framer-motion`) for animation, `next-themes` for dark mode, `lucide-react` v1 icons
 - Path alias: `@/*` → `src/*`
@@ -54,7 +54,16 @@ Consequence: changing the domain, name or job title means editing `lib/site.ts` 
 
 Pages and layouts are server components that export `metadata` / `generateMetadata`. Dynamic routes pre-render via `generateStaticParams()` and call `notFound()` on an unknown slug (a real 404, not a 200 "not found" screen). Interactive pieces are separate `"use client"` leaves — `BlogIndex`, `ProjectsGrid`, `BlogPostInteractions`, `CommentSection`, `Header`, `ThemeToggle`. Keep this split: making a page a client component silently kills its `metadata` export.
 
-Blog post bodies are trusted HTML strings in `blog.ts`, rendered with `dangerouslySetInnerHTML` and styled by `prose` classes.
+Blog post bodies are MDX files in `content/blog/<slug>.mdx` — the filename **is** the slug. `blog.ts`
+reads their frontmatter synchronously (`readFileSync` at module scope) and validates it with zod, so a
+bad `date` or a missing `excerpt` fails the build instead of shipping broken JSON-LD. Keep that read
+synchronous: `blogPosts`, `allTags`, `sitemap.ts` and `generateStaticParams()` all depend on it. Only
+the body is async — `BlogPost.content` carries raw MDX, compiled by `<MDXRemote>` in the article's
+server component and styled by `prose` classes.
+
+`date` and `readTime` are **derived** (from `dateISO` and the body word count at 200 wpm); do not
+hand-write them. `draft: true` excludes a post from every consumer at once. Publishing is: add one
+`.mdx` file, `git push`.
 
 ## Gotchas
 

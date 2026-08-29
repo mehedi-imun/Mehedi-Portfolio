@@ -1,0 +1,58 @@
+---
+title: "Getting Started with Next.js"
+description: "A practical introduction to Next.js: project setup, file-system routing, the rendering strategies it offers, and when to reach for each one."
+excerpt: "Learn how to build modern web applications with Next.js, the React framework for production."
+date: "2025-05-02"
+tags: ["Next.js", "React", "Tutorial"]
+---
+
+<p className="lead">Next.js is a React framework that handles the parts of a production app you would otherwise build yourself: routing, rendering strategy, bundling and caching. This post walks through setting up a project and the features you will actually use in the first week.</p>
+
+## What Next.js gives you over plain React
+
+A plain React app ships an empty HTML document and builds the page in the browser. Next.js renders on the server first, so the HTML that arrives already contains your content. That matters for perceived load time and it matters for anything that reads your page without executing much JavaScript.
+
+## Creating a project
+
+The official generator sets up TypeScript, ESLint and the App Router for you:
+
+```bash
+npx create-next-app@latest my-app
+```
+
+Answer yes to TypeScript and the App Router unless you have a specific reason not to. The App Router is where new framework features land.
+
+## File-system routing
+
+Directories under `app/` become URL segments, and a `page.tsx` inside a directory makes that segment routable. A file at `app/blog/page.tsx` serves `/blog`. A directory named with brackets, `app/blog/[slug]/page.tsx`, serves every URL under `/blog/` and receives the segment as a parameter.
+
+### Layouts nest
+
+A `layout.tsx` wraps every page beneath it and does not re-render when you navigate between sibling pages. Put your header, footer and providers there once rather than repeating them per page.
+
+## Server and client components
+
+Components in the App Router are server components by default. They run on the server, never ship to the browser, and can read data directly. Adding the "use client" directive at the top of a file opts that component and everything it imports into the browser bundle.
+
+The practical rule: keep pages as server components and push interactivity down into small client components. That way you keep the ability to export metadata from the page, and you ship less JavaScript.
+
+### Rendering strategies
+
+- **Static** - rendered at build time. The default, and the fastest thing you can serve.
+- **Dynamic** - rendered per request, for anything that depends on cookies or the incoming request.
+- **Incremental** - static, but revalidated on a timer so content stays fresh without a rebuild.
+
+## Data fetching
+
+Server components can be async. You await your data directly in the component body, with no effect hook and no loading state to manage:
+
+```tsx
+export default async function Page() {
+  const posts = await getPosts()
+  return <PostList posts={posts} />
+}
+```
+
+## Where to go next
+
+Once routing feels comfortable, read up on the metadata API for per-page titles and descriptions, and on `generateStaticParams` for pre-rendering dynamic routes. Those two together are what turn a working Next.js app into one that performs well and is properly indexable.

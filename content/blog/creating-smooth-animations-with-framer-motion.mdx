@@ -1,0 +1,64 @@
+---
+title: "Creating Smooth Animations with Framer Motion"
+description: "How to build smooth, interruptible React animations with Framer Motion: the motion component, layout animations, exit transitions and staying on the compositor."
+excerpt: "Learn how to add beautiful animations to your React applications using Framer Motion."
+date: "2025-04-21"
+tags: ["React", "Animation", "Framer Motion"]
+---
+
+<p className="lead">Framer Motion, published as the <code>motion</code> package, turns animation into a declarative prop rather than an imperative sequence. This post covers the parts you need for real interface work, and the performance rules that decide whether it feels smooth.</p>
+
+## The motion component
+
+Every animation starts with a `motion` element, which is an ordinary DOM element that accepts animation props:
+
+```tsx
+<motion.div
+  initial={{ opacity: 0, y: 12 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.3 }}
+/>
+```
+
+The `initial` prop is the state before mount, `animate` is the target. When the target changes, the animation runs from wherever the element currently is. That last part is what makes it feel good: an interrupted animation redirects rather than restarting.
+
+## Variants for coordinated motion
+
+Named states let a parent orchestrate its children, which is how you get a staggered list without hand-computing delays:
+
+```js
+const list = {
+  visible: { transition: { staggerChildren: 0.06 } },
+}
+const item = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0 },
+}
+```
+
+The parent sets the list variants, each child sets the item variants, and the stagger is derived rather than specified per element.
+
+## Exit animations
+
+React removes elements from the tree immediately, so an unmounting element has nothing left to animate. `AnimatePresence` holds it in the DOM until its exit animation finishes. Give every child a stable `key` or the presence tracking cannot tell what left.
+
+## Layout animations
+
+Adding the `layout` prop to a motion element animates position and size changes that come from a layout shift, not from an animated property. Reordering a list, expanding a card, moving an element between containers - all become smooth without you calculating coordinates. Under the hood it measures before and after and applies a transform, which is why it stays cheap.
+
+## Staying at 60fps
+
+This is the part that decides whether your animation feels expensive. Animate `opacity` and `transform` only. Those two are handled by the compositor without touching layout or paint. Animating `width`, `height`, `top` or `margin` forces layout recalculation on every frame, and on a mid-range phone that is where the jank comes from.
+
+- Prefer `scale` over animating width and height.
+- Prefer `x` and `y` over `top` and `left`.
+- Use the `layout` prop when a real layout change is unavoidable.
+- Do not animate a blur filter across large areas.
+
+## Respect reduced motion
+
+Some people get motion sickness from parallax and large transitions, and the operating system exposes that preference. The `useReducedMotion` hook reads it, and honouring it is a one-line change: fall back to a plain opacity fade, or to no animation at all. Shipping without this check is an accessibility bug, not a missing nicety.
+
+## One caveat about server rendering
+
+If an element's initial state is invisible, that is what lands in the server-rendered HTML. Anything important - your headline, your intro paragraph - should render visible and animate from there, or you have made your main content dependent on JavaScript running successfully.

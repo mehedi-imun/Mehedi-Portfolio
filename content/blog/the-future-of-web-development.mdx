@@ -1,0 +1,53 @@
+---
+title: "The Future of Web Development"
+description: "The trends actually reshaping web development: the server-rendering swing back, edge runtimes, typed end-to-end contracts and the return of platform primitives."
+excerpt: "Exploring emerging trends and technologies that will shape the future of web development."
+date: "2025-03-29"
+tags: ["Web Development", "Trends", "Technology"]
+---
+
+<p className="lead">Predicting frameworks is a waste of time. Predicting the direction of the constraints is not. Here are the shifts that seem to be holding, and what each one asks you to change.</p>
+
+## The pendulum swung back to the server
+
+For a decade the default was to ship a JavaScript bundle that built the page in the browser. That default is being reversed. Server components, islands architecture and progressively enhanced forms all point the same way: render on the server, hydrate only what needs to be interactive.
+
+The reason is not fashion, it is that the median device is a mid-range phone. Parsing and executing a megabyte of JavaScript on that device costs seconds you cannot get back with a faster network.
+
+**What it asks of you:** treat client-side JavaScript as a cost you justify per component, not as the default.
+
+## Compute is moving to the edge
+
+Running code in a datacentre near the user removes a round trip that no amount of caching fixes. Edge runtimes are constrained - no full Node API, limited execution time - which is exactly why they are fast to start.
+
+**What it asks of you:** know which of your work is latency-sensitive and portable enough to move, and keep it free of Node-specific dependencies.
+
+## Types are becoming an end-to-end contract
+
+The interesting change is not that people use TypeScript. It is that the type of an API response is increasingly derived from a single definition, rather than written twice and kept in sync by hand. Schema-first validation, generated clients and typed RPC all collapse the gap where client and server drift apart.
+
+**What it asks of you:** pick one place where a shape is defined, and generate everything else from it.
+
+## The platform absorbed the libraries
+
+A steady pattern: something needs a dependency, then it does not. Container queries replaced most of what a JavaScript element-size observer did. CSS nesting removed a common reason to reach for a preprocessor. The view transitions API is doing to page-transition libraries what `fetch` did to jQuery's ajax.
+
+**What it asks of you:** before adding a dependency, check whether the platform shipped it. The answer is yes more often than it used to be.
+
+## AI moved into the toolchain, not the output
+
+The durable effect of AI on this work so far is on the inside of the process - scaffolding, review, tests, migrations - rather than on what ships. The bottleneck has shifted from producing code to verifying it, which raises the return on tests, types and observability. Those were already good ideas; they are now load-bearing.
+
+**What it asks of you:** invest in the things that let you trust a change you did not write line by line.
+
+## Performance became a measured budget
+
+Core Web Vitals turned "the site feels slow" into three numbers with thresholds. That is a real change in how performance work gets funded, because a regression is now a number someone owns rather than a vague complaint.
+
+- **LCP** under 2.5s - how fast the main content appears.
+- **INP** under 200ms - how fast the page responds to input.
+- **CLS** under 0.1 - how much the layout jumps while loading.
+
+## What has not changed
+
+Semantic HTML still outlives every framework built on top of it. Accessibility is still cheaper to build in than to retrofit. A page that works before JavaScript loads is still more robust than one that does not. The tools churn; the constraints they are working around do not.

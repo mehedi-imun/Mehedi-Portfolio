@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import BlogPostInteractions from "@/components/BlogPostInteractions";
@@ -99,10 +100,9 @@ export default async function BlogPostPage({ params }: PageProps) {
               </div>
             </header>
 
-            <div
-              className="prose dark:prose-invert max-w-none break-words normal-case [overflow-wrap:anywhere] [&_pre]:overflow-x-auto"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            <div className="prose dark:prose-invert max-w-none break-words [overflow-wrap:anywhere] [&_pre]:overflow-x-auto">
+              <MDXRemote source={post.content} />
+            </div>
 
             <BlogPostInteractions slug={post.slug} />
 

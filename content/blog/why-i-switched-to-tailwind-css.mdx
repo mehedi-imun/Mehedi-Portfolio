@@ -1,0 +1,49 @@
+---
+title: "Why I Switched to Tailwind CSS"
+description: "Why I moved from Sass and BEM to Tailwind CSS: the maintenance problems it solved, the objections I had to work through, and where it still falls short."
+excerpt: "After years of using traditional CSS and various preprocessors, I made the switch to Tailwind CSS. Here is why."
+date: "2025-04-28"
+tags: ["CSS", "Tailwind", "Web Development"]
+---
+
+<p className="lead">After years of writing Sass with BEM naming, I moved to Tailwind CSS. The change was not about typing less. It was about deleting confidently.</p>
+
+## The problem was not writing CSS
+
+Writing CSS was never the bottleneck. The bottleneck was that on a project of any age, nobody could tell whether a rule was still in use. Deleting a component left its styles behind, because removing them meant proving nothing else depended on them. Stylesheets only grew.
+
+Preprocessors made this worse in one specific way. Nesting and mixins made it easy to write rules whose final specificity was hard to predict, so the fix for a stubborn style was another, more specific rule.
+
+## What Tailwind actually changes
+
+Tailwind moves styles into the markup as utility classes. The consequence that matters is **locality**: when you delete a component, its styling leaves with it. There is no orphaned stylesheet, because there is no stylesheet.
+
+### Constraints instead of choices
+
+Utilities come from a scale. Spacing is a fixed set of steps, not any pixel value you feel like typing. That constraint is the real value, and it is why a Tailwind codebase touched by four developers still looks consistent.
+
+```html
+<div class="flex items-center gap-4 rounded-lg border p-6">
+```
+
+You can read the box model, the layout and the spacing without opening another file.
+
+## The objections I had to work through
+
+### Separation of concerns
+
+This was my strongest objection and I no longer hold it. Separation of concerns is about coupling, not about file extensions. In a component-based app the component *is* the unit of concern, and its styles belong to it as much as its markup does. Splitting them across two files was never decoupling, only relocation.
+
+### Unreadable markup
+
+Partly fair. An element with twenty utilities is genuinely hard to scan. The answer is that an element needing twenty utilities is usually doing too much and should be split. When a pattern genuinely repeats, extract a component, not a CSS class.
+
+## Where it still falls short
+
+- Complex keyframe animations are clearer in real CSS. Write them in a stylesheet and reference them.
+- Long arbitrary-value utilities are worse than a plain CSS rule. If you are writing brackets, consider dropping to CSS.
+- The learning curve is real for anyone joining who does not know the scale by heart.
+
+## Would I do it again
+
+Yes, for anything component-based. The gain was not development speed, it was that stylesheets stopped growing monotonically. Being able to delete a component and know its styles went with it changed how willing I was to refactor.

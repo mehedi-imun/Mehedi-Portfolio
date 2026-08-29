@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -196,4 +197,80 @@
       animation: none;
     }
   }
+}
+
+/*
+ * Article typography, mapped onto the design tokens above.
+ *
+ * The --tw-prose-invert-* values deliberately point at the SAME tokens as their
+ * light counterparts. The tokens are already theme-aware -- --foreground and
+ * friends flip under `.dark` -- so giving prose-invert genuinely inverted values
+ * would flip the theme a second time and land back on light-on-light.
+ *
+ * Unlayered on purpose: the plugin emits its defaults inside a @layer, so plain
+ * rules here win the cascade without needing !important or extra specificity.
+ */
+.prose {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-lead: var(--muted-foreground);
+  --tw-prose-links: var(--foreground);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-counters: var(--muted-foreground);
+  --tw-prose-bullets: var(--muted-foreground);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--border);
+  --tw-prose-captions: var(--muted-foreground);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-pre-code: var(--foreground);
+  --tw-prose-pre-bg: var(--muted);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border);
+
+  --tw-prose-invert-body: var(--foreground);
+  --tw-prose-invert-headings: var(--foreground);
+  --tw-prose-invert-lead: var(--muted-foreground);
+  --tw-prose-invert-links: var(--foreground);
+  --tw-prose-invert-bold: var(--foreground);
+  --tw-prose-invert-counters: var(--muted-foreground);
+  --tw-prose-invert-bullets: var(--muted-foreground);
+  --tw-prose-invert-hr: var(--border);
+  --tw-prose-invert-quotes: var(--foreground);
+  --tw-prose-invert-quote-borders: var(--border);
+  --tw-prose-invert-captions: var(--muted-foreground);
+  --tw-prose-invert-code: var(--foreground);
+  --tw-prose-invert-pre-code: var(--foreground);
+  --tw-prose-invert-pre-bg: var(--muted);
+  --tw-prose-invert-th-borders: var(--border);
+  --tw-prose-invert-td-borders: var(--border);
+}
+
+/*
+ * --muted sits close to --card in both themes, so the code block needs a border
+ * to read as a distinct surface. Colours stay on tokens rather than hard-coded
+ * hex so a syntax highlighter added later can own the foreground only.
+ */
+.prose pre {
+  border: 1px solid var(--border);
+}
+
+/* Inline code: prose ships the colour but no surface of its own. */
+.prose :not(pre) > code {
+  background-color: var(--muted);
+  border-radius: var(--radius-sm);
+  padding: 0.15em 0.35em;
+  font-weight: 500;
+}
+
+/* The plugin renders ::before/::after backticks around inline code. */
+.prose :not(pre) > code::before,
+.prose :not(pre) > code::after {
+  content: none;
+}
+
+/* Links need to stay distinguishable without a brand colour defined. */
+.prose a {
+  text-decoration-color: var(--muted-foreground);
+  text-underline-offset: 0.2em;
 }
