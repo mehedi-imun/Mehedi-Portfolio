@@ -1,0 +1,81 @@
+---
+slug: "growth-studio"
+title: "Growth Studio"
+excerpt: "An AI content and trend intelligence platform that watches seven tech communities and turns any trend into publish-ready posts."
+description: "An AI content and trend intelligence platform: it monitors seven tech communities, ranks trends by velocity and brand relevance, and drafts platform-specific posts."
+tags: ["React", "Node.js", "TypeScript", "MongoDB", "AI"]
+category: "Web App"
+year: "2026"
+role: "Full stack developer"
+stack:
+  - "React 19"
+  - "TypeScript"
+  - "Vite"
+  - "Tailwind CSS v4"
+  - "TanStack Query"
+  - "Node 22"
+  - "Express 5"
+  - "MongoDB Atlas"
+  - "Redis"
+  - "Docker"
+cover: "/asset/project/content-recomandation/cover.png"
+coverAlt: "The Growth Studio trend dashboard"
+liveUrl: "https://growth-studio-sepia.vercel.app"
+repoUrl: "https://github.com/mehedi-imun/AI-Content-Trend-Recommendation"
+featured: true
+order: 1
+outcomes:
+  - "Deduplicates seven separate community feeds into a single ranked trend pool"
+  - "Turns any trend into publish-ready Facebook, LinkedIn and YouTube drafts in a defined brand voice"
+  - "Provider-agnostic AI layer: OpenRouter, Anthropic or OpenAI behind one interface"
+  - "LLM credentials are AES-256-GCM encrypted rather than sitting in environment variables"
+---
+
+Growth Studio watches what is trending across seven tech communities, ranks it for a
+team, and turns any item into publish-ready content in that team's own brand voice.
+
+## The problem
+
+Content teams working in tech have the opposite of an information shortage. HackerNews,
+Dev.to, GitHub Trending, Lobsters, Mastodon, Product Hunt and Stack Overflow all surface
+what people are talking about, but each is a separate tab, each ranks by its own logic,
+and the same story appears in four of them under four different headlines. Deciding what
+is actually worth writing about means reading all of it, every day — and the work of
+turning that decision into a post only starts afterwards.
+
+## The approach
+
+The platform collects from all seven sources on a schedule, then does the part that
+makes the collection useful: **deduplicating across sources** so one story is one entry,
+and ranking what remains by velocity and by relevance to the team's own brand rather
+than by raw popularity.
+
+From there any item can be expanded into platform-specific drafts — a Facebook post, a
+reel script, a LinkedIn article, a YouTube idea, a caption — written in a configured
+brand voice rather than a generic one. A chat interface sits over the same trend pool,
+so the collection can be interrogated conversationally instead of only browsed.
+
+The AI layer is deliberately provider-agnostic: OpenRouter, Anthropic and OpenAI sit
+behind one interface, so the model can change without the application changing. Keys are
+supplied in-app and stored AES-256-GCM encrypted, rather than being baked into the
+deployment environment.
+
+## Architecture
+
+A React 19 single-page frontend built with Vite, using TanStack Query for server state
+and Radix UI primitives for the interface. The backend is Express 5 on Node 22 with
+Mongoose over MongoDB Atlas, using Atlas Vector Search for semantic retrieval across the
+trend pool, Redis for caching and `node-cron` for the ingestion schedule. Requests are
+validated with Zod and logged with pino.
+
+The frontend deploys to Vercel; the backend runs in Docker via Dokploy. The API is
+documented with Swagger at `/api/v1/docs`.
+
+## What it does
+
+- Scheduled ingestion from seven community sources, deduplicated into one pool
+- Ranking by velocity and configured brand relevance
+- Generation of Facebook, LinkedIn and YouTube drafts in a defined brand voice
+- Conversational querying of the trend pool
+- Vector search over collected trends via MongoDB Atlas
+- JWT authentication, encrypted provider credentials, and a documented REST API

@@ -43,7 +43,7 @@ export function localImageDimensions(src: string): ImageDimensions | null {
      */
     throw new Error(
       `Image not found: "${src}". Expected a readable image at ${file}. ` +
-        `Post and project images live in public/<blog|projects>/<slug>/.`
+        `Images live anywhere under public/, referenced by the path with the public prefix removed.`
     );
   }
 
