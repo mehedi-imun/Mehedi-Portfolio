@@ -5,7 +5,7 @@ import Footer from "@/components/sections/Footer";
 import { breadcrumbSchema, personId } from "@/lib/seo";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
-const title = "Contact";
+const title = "Contact - Available for Full Stack Work";
 const description =
   "Get in touch with Mehedi Imun, full stack web developer in Dhaka, Bangladesh. Available for full stack and backend work in Node.js, TypeScript and Next.js.";
 

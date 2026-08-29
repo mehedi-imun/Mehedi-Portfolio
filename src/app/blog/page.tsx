@@ -4,9 +4,9 @@ import JsonLd from "@/components/JsonLd";
 import { allTags, blogPostSummaries } from "@/lib/blog";
 import { blogSchema, collectionPageSchema } from "@/lib/seo";
 
-const title = "Blog";
+const title = "Blog - Web Development and AI Workflow Notes";
 const description =
-  "Articles on Next.js, React, TypeScript, Tailwind CSS and backend development, written from production experience by Mehedi Imun.";
+  "Engineering notes by Mehedi Imun on Next.js, React, TypeScript and AI-assisted development workflows, written from real production experience.";
 
 export const metadata: Metadata = {
   title,

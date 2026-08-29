@@ -4,9 +4,9 @@ import ProjectsGrid from "@/components/ProjectsGrid";
 import { projectCategories, projects } from "@/lib/projects";
 import { collectionPageSchema } from "@/lib/seo";
 
-const title = "Projects";
+const title = "Projects - Full Stack Web Development Work";
 const description =
-  "Selected web development projects by Mehedi Imun, built with Next.js, React, TypeScript, Node.js and PostgreSQL - from e-commerce platforms to internal tools.";
+  "Selected web development work by Mehedi Imun, built with Next.js, React, TypeScript, Node.js and PostgreSQL - written up as case studies, not screenshots.";
 
 export const metadata: Metadata = {
   title,

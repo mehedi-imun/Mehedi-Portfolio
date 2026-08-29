@@ -9,9 +9,9 @@ import { experienceGroups } from "@/lib/experience";
 import { breadcrumbSchema, personId } from "@/lib/seo";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
-const title = "About";
+const title = "About - Full Stack Developer in Dhaka";
 const description =
-  "Mehedi Imun is a full stack web developer in Dhaka, Bangladesh with 4 years of experience in Node.js, Express, PostgreSQL and TypeScript, and 3 years teaching web development.";
+  "Mehedi Imun is a full stack web developer in Dhaka, Bangladesh with 4 years across Node.js, Express, PostgreSQL and TypeScript, plus 3 years teaching.";
 
 export const metadata: Metadata = {
   title,

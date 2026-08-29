@@ -4,24 +4,38 @@ import { projects } from "@/lib/projects";
 import { absoluteUrl } from "@/lib/site";
 
 /**
- * Static routes carry a build-time lastModified; blog posts use their real
- * publication date so the sitemap does not claim everything changed today.
+ * Every lastModified in here is a real content date or is absent. Nothing is
+ * stamped with the build time -- see the note inside on why.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const buildDate = new Date();
+  /*
+   * The newest thing actually published, or undefined when nothing is.
+   * `lastModified` is omitted rather than filled with the build date: stamping
+   * every deploy onto pages that did not change teaches crawlers to ignore the
+   * field everywhere, including on the post URLs where it is accurate.
+   */
+  const latestPostDate = blogPosts.length
+    ? new Date(
+        Math.max(
+          ...blogPosts.map((post) =>
+            new Date(post.updated ?? post.dateISO).getTime()
+          )
+        )
+      )
+    : undefined;
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: absoluteUrl("/"), lastModified: buildDate, changeFrequency: "monthly", priority: 1 },
-    { url: absoluteUrl("/about"), lastModified: buildDate, changeFrequency: "yearly", priority: 0.8 },
-    { url: absoluteUrl("/projects"), lastModified: buildDate, changeFrequency: "monthly", priority: 0.9 },
-    { url: absoluteUrl("/blog"), lastModified: buildDate, changeFrequency: "weekly", priority: 0.8 },
-    { url: absoluteUrl("/contact"), lastModified: buildDate, changeFrequency: "yearly", priority: 0.6 },
+    // The home page surfaces the newest writing, so it moves when writing does.
+    { url: absoluteUrl("/"), lastModified: latestPostDate, changeFrequency: "monthly", priority: 1 },
+    { url: absoluteUrl("/about"), changeFrequency: "yearly", priority: 0.8 },
+    { url: absoluteUrl("/projects"), changeFrequency: "monthly", priority: 0.9 },
+    { url: absoluteUrl("/blog"), lastModified: latestPostDate, changeFrequency: "weekly", priority: 0.8 },
+    { url: absoluteUrl("/contact"), changeFrequency: "yearly", priority: 0.6 },
   ];
 
   // projects excludes drafts, as blogPosts does.
   const projectRoutes: MetadataRoute.Sitemap = projects.map((project) => ({
     url: absoluteUrl(`/projects/${project.slug}`),
-    lastModified: buildDate,
     changeFrequency: "yearly",
     priority: 0.7,
   }));

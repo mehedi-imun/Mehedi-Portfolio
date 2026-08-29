@@ -63,6 +63,27 @@ function subscribeToReducedMotion(onChange: () => void) {
   return () => query.removeEventListener("change", onChange);
 }
 
+function subscribeToVisibility(onChange: () => void) {
+  document.addEventListener("visibilitychange", onChange);
+  return () => document.removeEventListener("visibilitychange", onChange);
+}
+
+/*
+ * useSyncExternalStore, not useState + a visibilitychange listener.
+ * `visibilitychange` fires only on a transition, never on subscribe, so a
+ * listener-only version starts from a guessed default and stays there -- a page
+ * opened directly into a background tab would report "visible" forever and run
+ * the demo where nobody can see it. A snapshot getter reads the real value on
+ * mount and on every change.
+ */
+function useTabVisible() {
+  return useSyncExternalStore(
+    subscribeToVisibility,
+    () => document.visibilityState === "visible",
+    () => true
+  );
+}
+
 function usePrefersReducedMotion() {
   return useSyncExternalStore(
     subscribeToReducedMotion,
@@ -235,6 +256,7 @@ export default function Terminal({ context }: { context: TerminalContext }) {
   const router = useRouter();
   const { setTheme } = useTheme();
   const reducedMotion = usePrefersReducedMotion();
+  const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
   const nextId = useRef(1);
@@ -263,6 +285,14 @@ export default function Terminal({ context }: { context: TerminalContext }) {
    */
   const [hovering, setHovering] = useState(false);
   const [engaged, setEngaged] = useState(false);
+  /*
+   * The demo is an animation loop with no natural end, so it also has to stop
+   * when nobody can see it: scrolled past the hero, or the tab in the
+   * background. Left ungated it competes for the main thread with every
+   * interaction further down the page, which is exactly what INP measures.
+   */
+  const [inView, setInView] = useState(true);
+  const tabVisible = useTabVisible();
 
   const typingId = typing?.id ?? null;
   const typingSteps = typing?.steps ?? 0;
@@ -272,7 +302,8 @@ export default function Terminal({ context }: { context: TerminalContext }) {
    * Reduced motion opts out entirely: an unprompted animation that also moves
    * the scroll position is exactly what that preference is asking us not to do.
    */
-  const demoRunning = !reducedMotion && !engaged && !hovering;
+  const demoRunning =
+    !reducedMotion && !engaged && !hovering && inView && tabVisible;
 
   const suggestions = useMemo(
     () => suggestInput(input, context),
@@ -410,6 +441,20 @@ export default function Terminal({ context }: { context: TerminalContext }) {
   useEffect(() => {
     runLineRef.current = runLine;
   });
+
+  useEffect(() => {
+    const node = rootRef.current;
+    if (!node) return;
+
+    // observe() always delivers one callback for the current state, so the
+    // useState default above self-corrects -- no mount-time read needed here.
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.2 }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   /*
    * The demo itself. Every state write happens inside a timer continuation
@@ -550,6 +595,7 @@ export default function Terminal({ context }: { context: TerminalContext }) {
      * nothing saying what it is.
      */
     <div
+      ref={rootRef}
       role="region"
       aria-label="Interactive terminal - explore this site's data from the command line"
       onMouseEnter={() => setHovering(true)}
