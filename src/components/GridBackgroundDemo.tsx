@@ -20,8 +20,15 @@ export function GridBackgroundDemo({children}: {children: React.ReactNode}) {
       {/*
         w-full is required: this is a shrink-to-fit flex child, so without it the
         content collapses to its max-content width instead of filling the row.
+
+        `relative z-10`, not a bare `z-40`: a flex item honours z-index even
+        while statically positioned, so `z-40` put this whole section on the
+        same layer as the fixed header -- and being later in the DOM, the
+        project cards won the tie and scrolled over the navbar. Ten is enough to
+        clear the two absolute background layers below and stays under the
+        chrome.
       */}
-      <div className="z-40 w-full">{children}</div>
+      <div className="relative z-10 w-full">{children}</div>
     </div>
   );
 }

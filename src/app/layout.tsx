@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Bengali } from "next/font/google";
 import JsonLd from "@/components/JsonLd";
 import Header from "@/components/Header";
+import TopTicker from "@/components/TopTicker";
 import { personSchema, websiteSchema } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { ThemeProvider } from "../components/theme-provider";
@@ -117,6 +118,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <TopTicker />
           <Header />
           {children}
         </ThemeProvider>

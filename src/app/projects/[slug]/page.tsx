@@ -70,7 +70,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const { previous, next } = getProjectNeighbours(project.slug);
 
   return (
-    <main className="max-w-7xl mx-auto px-4 lg:px-0 py-12 mt-20">
+    <main className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10 py-12 mt-20">
       <div className="max-w-3xl mx-auto">
         <Button variant="ghost" asChild className="mb-6 pl-0 hover:bg-transparent">
           <Link href="/projects" className="flex items-center">
@@ -80,7 +80,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
         <article>
           <header className="mb-8">
-            <p className="text-sm font-medium text-[#ff914d] mb-3">
+            <p className="text-sm font-medium text-brand mb-3">
               {project.category} &middot; {project.year}
             </p>
             <h1 className="text-3xl md:text-5xl font-bold mb-4">
@@ -245,7 +245,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 <span className="text-xs uppercase tracking-wide text-muted-foreground">
                   Previous
                 </span>
-                <span className="mt-1 block font-medium group-hover:text-[#ff914d]">
+                <span className="mt-1 block font-medium group-hover:text-brand">
                   {previous.title}
                 </span>
               </Link>
@@ -260,7 +260,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 <span className="text-xs uppercase tracking-wide text-muted-foreground">
                   Next
                 </span>
-                <span className="mt-1 block font-medium group-hover:text-[#ff914d]">
+                <span className="mt-1 block font-medium group-hover:text-brand">
                   {next.title}
                 </span>
               </Link>

@@ -11,7 +11,7 @@ export const siteConfig = {
   jobTitle: "Full Stack Web Developer",
   title: "Mehedi Imun - Full Stack Web Developer",
   description:
-    "Full stack web developer in Dhaka, Bangladesh building scalable backends with Node.js, Express, PostgreSQL and TypeScript. 4 years of experience in API design, Docker and CI/CD.",
+    "Full stack web developer in Dhaka, Bangladesh building web products end to end with React, Next.js, Node and PostgreSQL. API design, Docker and CI/CD.",
   locale: "en_US",
   email: "mehediimun@gmail.com",
   location: {

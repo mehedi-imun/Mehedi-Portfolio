@@ -7,7 +7,7 @@ import { absoluteUrl, siteConfig } from "@/lib/site";
 
 const title = "Contact";
 const description =
-  "Get in touch with Mehedi Imun, full stack web developer in Dhaka, Bangladesh. Available for backend and full stack work in Node.js, TypeScript and Next.js.";
+  "Get in touch with Mehedi Imun, full stack web developer in Dhaka, Bangladesh. Available for full stack and backend work in Node.js, TypeScript and Next.js.";
 
 export const metadata: Metadata = {
   title,
@@ -35,7 +35,7 @@ export default function ContactPage() {
   return (
     <>
       <main className="mt-20">
-        <div className="max-w-7xl mx-auto px-4 lg:px-0 pt-12">
+        <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10 pt-12">
           <h1 className="text-3xl md:text-5xl font-bold mb-4">
             Contact Mehedi Imun
           </h1>

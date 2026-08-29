@@ -86,7 +86,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <div className="bg-gradient-to-br from-background via-background to-muted/30 min-h-screen">
-      <main className="max-w-7xl mx-auto px-4 lg:px-0 py-12 pb-24 mt-20">
+      <main className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10 py-12 pb-24 mt-20">
         <div className="max-w-3xl mx-auto">
           <Button
             variant="ghost"

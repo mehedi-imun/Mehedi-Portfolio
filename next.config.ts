@@ -14,6 +14,13 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
       },
     ],
+
+    /**
+     * Any `quality` a component asks for must be declared here. Without this
+     * list Next silently falls back to 75 -- the hero was requesting q=90 and
+     * being served q=75, with no warning anywhere.
+     */
+    qualities: [75, 90],
   },
 
   /**

@@ -9,9 +9,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Reveal } from "@/components/ui/reveal";
+import { Section, SectionHeading } from "@/components/ui/section";
 import { Textarea } from "@/components/ui/textarea";
 import { FaFacebook, FaGithub, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import { useState } from "react";
+import { siteConfig } from "@/lib/site";
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -19,33 +22,63 @@ export default function ContactSection() {
     email: "",
     message: "",
   });
+  const [handedOff, setHandedOff] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setHandedOff(false);
   };
 
+  /*
+   * This site is static by design -- no API routes, no backend -- so there is
+   * nowhere to POST to. Handing the composed message to the visitor's mail
+   * client is the only thing that actually delivers it.
+   *
+   * The previous version called preventDefault() and stopped there, so the
+   * button looked like it worked while silently discarding every message.
+   * A form that lies about sending is worse than no form at all.
+   */
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const subject = `Portfolio enquiry from ${formData.name}`;
+    const body = `${formData.message}\n\n--\n${formData.name}\n${formData.email}`;
+    const mailto = `mailto:${siteConfig.email}?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailto;
+    setHandedOff(true);
   };
 
   return (
-    <section className="py-12 md:py-20 mx-auto  bg-muted/30" id="contact">
-      <div className="max-w-7xl mx-auto px-4 lg:px-0">
-        <h2 className="text-lg md:text-4xl mb-4 text-black dark:text-white max-w-4xl">Get In Touch</h2>
-        <p className="text-muted-foreground max-w-2xl mb-8">
-          Have a question or want to work together? Feel free to reach out!
-        </p>
+    <Section
+      id="contact"
+      aria-labelledby="contact-heading"
+      className="border-t border-border bg-muted/30"
+    >
+      <Reveal>
+        <SectionHeading
+          id="contact-heading"
+          index="09"
+          eyebrow="Contact"
+          title="Get In Touch"
+          lead="Have a question or want to work together? Send a message and I will get back to you."
+          className="mb-10"
+        />
+      </Reveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <Reveal delay={0.1}>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle>Send a Message</CardTitle>
               <CardDescription>
-                Fill out the form below and I&lsquo;ll get back to you as soon
-                as possible.
+                This opens the message in your own email app, so you keep a copy
+                of what you sent.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -92,8 +125,33 @@ export default function ContactSection() {
                   />
                 </div>
                 <Button type="submit" className="w-full">
-                  Send Message
+                  Open in Email App
                 </Button>
+                <p aria-live="polite" className="text-sm text-muted-foreground">
+                  {handedOff ? (
+                    <>
+                      Your email app should have opened. If nothing happened,
+                      write to{" "}
+                      <a
+                        href={`mailto:${siteConfig.email}`}
+                        className="text-brand underline underline-offset-4"
+                      >
+                        {siteConfig.email}
+                      </a>{" "}
+                      directly.
+                    </>
+                  ) : (
+                    <>
+                      Prefer to write directly?{" "}
+                      <a
+                        href={`mailto:${siteConfig.email}`}
+                        className="text-brand underline underline-offset-4"
+                      >
+                        {siteConfig.email}
+                      </a>
+                    </>
+                  )}
+                </p>
               </form>
             </CardContent>
           </Card>
@@ -108,21 +166,24 @@ export default function ContactSection() {
                   <div>
                     <p className="font-medium">Email</p>
                     <a
-                      href="mailto:mehediimun@gmail.com"
+                      href={`mailto:${siteConfig.email}`}
                       className="text-muted-foreground hover:text-brand"
                     >
-                      mehediimun@gmail.com
+                      {siteConfig.email}
                     </a>
                   </div>
                   <div>
                     <p className="font-medium">Location</p>
-                    <p className="text-muted-foreground">Dhaka,Bangladesh</p>
+                    <p className="text-muted-foreground">
+                      {siteConfig.location.city}, {siteConfig.location.country}
+                    </p>
                   </div>
                   <div>
                     <p className="font-medium">Social</p>
                     <div className="flex space-x-4 mt-2">
                       <a
-                        href="https://www.facebook.com/mehediimun"
+                        href={siteConfig.socials.facebook}
+                        aria-label="Facebook"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-brand"
@@ -130,7 +191,8 @@ export default function ContactSection() {
                         <FaFacebook size={24} />
                       </a>
                       <a
-                        href="https://x.com/mehediimun"
+                        href={siteConfig.socials.x}
+                        aria-label="X"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-brand"
@@ -138,7 +200,8 @@ export default function ContactSection() {
                         <FaXTwitter size={24} />
                       </a>
                       <a
-                        href="https://github.com/mehedi-imun"
+                        href={siteConfig.socials.github}
+                        aria-label="GitHub"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-brand"
@@ -146,7 +209,8 @@ export default function ContactSection() {
                         <FaGithub size={24} />
                       </a>
                       <a
-                        href="https://www.linkedin.com/in/mehedi-imun/"
+                        href={siteConfig.socials.linkedin}
+                        aria-label="LinkedIn"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-brand"
@@ -160,7 +224,7 @@ export default function ContactSection() {
             </Card>
           </div>
         </div>
-      </div>
-    </section>
+      </Reveal>
+    </Section>
   );
 }
