@@ -31,14 +31,14 @@ const fonts = [
     style: "normal" as const,
   },
   {
-    name: "Noto Sans Bengali",
-    data: readFont("noto-sans-bengali-bengali-400-normal.woff"),
+    name: "Hind Siliguri",
+    data: readFont("hind-siliguri-bengali-400-normal.woff"),
     weight: 400 as const,
     style: "normal" as const,
   },
   {
-    name: "Noto Sans Bengali",
-    data: readFont("noto-sans-bengali-bengali-700-normal.woff"),
+    name: "Hind Siliguri",
+    data: readFont("hind-siliguri-bengali-700-normal.woff"),
     weight: 700 as const,
     style: "normal" as const,
   },
@@ -69,7 +69,7 @@ export default async function ProjectOpengraphImage({ params }: Props) {
           padding: "80px",
           background: "#0a0a0a",
           color: "#fafafa",
-          fontFamily: "Geist, 'Noto Sans Bengali'",
+          fontFamily: "Geist, 'Hind Siliguri'",
         }}
       >
         <div

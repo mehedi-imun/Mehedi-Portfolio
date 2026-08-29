@@ -1,92 +1,83 @@
 import Link from "next/link";
+import { Container } from "@/components/ui/section";
+import { siteConfig } from "@/lib/site";
+
+const pageLinks = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/projects", label: "Projects" },
+  { href: "/blog", label: "Blog" },
+  { href: "/contact", label: "Contact" },
+];
+
+const socialLinks = [
+  { href: siteConfig.socials.facebook, label: "Facebook" },
+  { href: siteConfig.socials.x, label: "X" },
+  { href: siteConfig.socials.github, label: "GitHub" },
+  { href: siteConfig.socials.linkedin, label: "LinkedIn" },
+];
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    
-    <footer className="border-t relative  ">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#ff914d]/20 to-transparent rounded-lg blur-3xl opacity-70 -z-10"></div>
-      <div className="max-w-7xl mx-auto px-4 lg:px-0 py-8 ">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer className="relative border-t border-border">
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-gradient-to-r from-brand-accent/20 to-transparent blur-3xl"
+      />
+      <Container className="py-12 md:py-16">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div>
-            <h3 className="text-lg font-semibold mb-4">Portfolio</h3>
-            <p className="text-muted-foreground">
-              A personal portfolio showcasing my work, skills, and blog.
+            <h2 className="mb-4 text-lg font-semibold">{siteConfig.name}</h2>
+            <p className="max-w-[45ch] text-muted-foreground">
+              {siteConfig.jobTitle} in {siteConfig.location.city},{" "}
+              {siteConfig.location.country}. Interfaces, APIs and the
+              pipelines that ship them.
             </p>
           </div>
 
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Links</h3>
+          <nav aria-label="Footer">
+            <h2 className="mb-4 text-lg font-semibold">Links</h2>
             <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/"
-                  className="text-muted-foreground hover:text-brand"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  className="text-muted-foreground hover:text-brand"
-                >
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/projects"
-                  className="text-muted-foreground hover:text-brand"
-                >
-                  Projects
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/blog"
-                  className="text-muted-foreground hover:text-brand"
-                >
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-muted-foreground hover:text-brand"
-                >
-                  Contact
-                </Link>
-              </li>
+              {pageLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-muted-foreground transition-colors hover:text-brand"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div>
+            <h2 className="mb-4 text-lg font-semibold">Connect</h2>
+            <ul className="flex flex-wrap gap-x-4 gap-y-2">
+              {socialLinks.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    className="text-muted-foreground transition-colors hover:text-brand"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
-
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Connect</h3>
-            <div className="flex space-x-4">
-            <a href="https://www.facebook.com/mehediimun" className="text-muted-foreground hover:text-brand" target="_blank" rel="noopener noreferrer">
-              
-              Facebook
-            </a>
-              <a href="https://x.com/mehediimun" className="text-muted-foreground hover:text-brand" target="_blank" rel="noopener noreferrer">
-              
-                X
-              </a>
-              <a href="https://github.com/mehedi-imun" className="text-muted-foreground hover:text-brand" target="_blank" rel="noopener noreferrer">
-                GitHub
-              </a>
-              <a href="https://www.linkedin.com/in/mehedi-imun/" className="text-muted-foreground hover:text-brand" target="_blank" rel="noopener noreferrer">
-                LinkedIn
-              </a>
-            </div>
-          </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t text-center text-sm text-muted-foreground">
-          <p>© {currentYear} Mehedi Portfolio. All rights reserved.</p>
+        <div className="mt-10 border-t border-border pt-6 text-center text-sm text-muted-foreground">
+          <p>
+            © {currentYear} {siteConfig.name}. All rights reserved.
+          </p>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

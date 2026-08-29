@@ -38,7 +38,7 @@ const aboutPageSchema = {
 export default function AboutPage() {
   return (
     <>
-      <main className="max-w-7xl mx-auto px-4 lg:px-0 py-12 mt-20">
+      <main className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10 py-12 mt-20">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12">
           <div className="max-w-3xl">
             <h1 className="text-3xl md:text-5xl font-bold mb-6">
@@ -86,7 +86,7 @@ export default function AboutPage() {
                       key={experience.id}
                       className="mb-8 relative pl-8 before:content-[''] before:absolute before:left-0 before:top-2 before:w-3 before:h-3 before:bg-brand before:rounded-full before:ring-4 before:ring-brand/20"
                     >
-                      <Badge className="inline-flex items-center rounded-full px-4 py-1 text-sm font-medium bg-muted/30 text-[#ff914d] mb-3">
+                      <Badge className="inline-flex items-center rounded-full border border-brand/40 bg-transparent px-4 py-1 font-mono text-xs uppercase tracking-[0.18em] text-brand mb-3">
                         {experience.duration}
                       </Badge>
                       <h3 className="text-xl font-bold">{experience.title}</h3>

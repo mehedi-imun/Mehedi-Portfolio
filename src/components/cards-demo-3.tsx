@@ -5,18 +5,33 @@ import { animate, motion } from "motion/react";
 import React, { useEffect } from "react";
 interface Tool {
   category: string;
-  items: { icon: React.ReactNode }[];
+  items: { name: string; icon: React.ReactNode }[];
 }
 
 export default function TechCard({ tools }: { tools: Tool[] }) {
-  return tools.map((tool, index) => (
-    <Card key={index} className="relative">
+  return tools.map((tool) => (
+    <Card key={tool.category} className="relative">
       <CardTitle>{tool.category}</CardTitle>
       <CardSkeletonContainer showGradient>
         <Skeleton>
-          {tool.items.map((item, index) => (
-            <div key={index}>
-              <Container className="h-20 w-20 circle-1">{item.icon}</Container>
+          {tool.items.map((item) => (
+            /*
+             * react-icons renders each glyph as an <svg role="img">, which
+             * needs its own accessible name -- otherwise this section is a
+             * wall of anonymous logos to a screen reader. The name goes on the
+             * wrapper and the icon is hidden from the tree, so it is announced
+             * exactly once. title= also gives sighted users a tooltip, since
+             * the names are not rendered visually anywhere.
+             */
+            <div key={item.name}>
+              <Container
+                role="img"
+                aria-label={item.name}
+                title={item.name}
+                className="h-20 w-20 circle-1"
+              >
+                <span aria-hidden>{item.icon}</span>
+              </Container>
             </div>
           ))}
         </Skeleton>
@@ -85,7 +100,7 @@ const Skeleton = ({ children }: { children: React.ReactNode }) => {
         {children}
       </div>
 
-      <div className="h-40 w-px absolute top-20 m-auto z-40 bg-gradient-to-b from-transparent via-cyan-500 to-transparent animate-move">
+      <div className="h-40 w-px absolute top-20 m-auto z-40 bg-gradient-to-b from-transparent via-brand to-transparent animate-move">
         <div className="w-10 h-32 top-1/2 -translate-y-1/2 absolute -left-10">
           <Sparkles />
         </div>
@@ -148,7 +163,7 @@ const Sparkles = () => {
             borderRadius: "50%",
             zIndex: 1,
           }}
-          className="inline-block bg-black dark:bg-white"
+          className="inline-block bg-foreground"
         ></motion.span>
       ))}
     </div>
@@ -165,7 +180,7 @@ export const Card = ({
   return (
     <div
       className={cn(
-       "max-w-sm w-full mx-auto p-4 rounded-xl border border-[rgba(255,255,255,0.10)] dark:bg-[rgba(40,40,40,0.70)] bg-gray-100 shadow-[2px_4px_16px_0px_rgba(248,248,248,0.06)_inset] group"
+       "group mx-auto w-full max-w-sm rounded-xl border border-border bg-card p-4 shadow-sm"
 ,
         className
       )}
@@ -185,7 +200,7 @@ export const CardTitle = ({
   return (
     <h3
       className={cn(
-        "text-lg font-semibold text-gray-800 dark:text-white py-2",
+        "py-2 text-lg font-semibold text-foreground",
         className
       )}
     >
@@ -204,7 +219,7 @@ export const CardDescription = ({
   return (
     <p
       className={cn(
-        "text-sm font-normal text-neutral-600 dark:text-neutral-400 max-w-sm",
+        "max-w-sm text-sm font-normal text-muted-foreground",
         className
       )}
     >
@@ -228,7 +243,7 @@ export const CardSkeletonContainer = ({
         "h-[15rem] md:h-[20rem] rounded-xl z-40",
         className,
         showGradient &&
-          "bg-neutral-300 dark:bg-[rgba(40,40,40,0.70)] [mask-image:radial-gradient(50%_50%_at_50%_50%,white_0%,transparent_100%)]"
+          "bg-muted [mask-image:radial-gradient(50%_50%_at_50%_50%,white_0%,transparent_100%)]"
       )}
     >
       {children}
@@ -239,12 +254,11 @@ export const CardSkeletonContainer = ({
 const Container = ({
   className,
   children,
-}: {
-  className?: string;
-  children: React.ReactNode;
-}) => {
+  ...props
+}: React.ComponentProps<"div">) => {
   return (
     <div
+      {...props}
       className={cn(
         `h-16 w-16 rounded-full flex items-center justify-center bg-[rgba(248,248,248,0.01)]
     shadow-[0px_0px_8px_0px_rgba(248,248,248,0.25)_inset,0px_32px_24px_-16px_rgba(0,0,0,0.40)]

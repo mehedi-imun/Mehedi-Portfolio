@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Noto_Sans_Bengali } from "next/font/google";
+import { Geist, Geist_Mono, Hind_Siliguri, Literata, Tiro_Bangla } from "next/font/google";
 import JsonLd from "@/components/JsonLd";
 import Header from "@/components/Header";
+import TopTicker from "@/components/TopTicker";
 import { personSchema, websiteSchema } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { ThemeProvider } from "../components/theme-provider";
@@ -20,18 +21,58 @@ const geistMono = Geist_Mono({
 });
 
 /*
- * Geist has no Bengali glyphs, so Bengali codepoints fall through to this face
- * automatically, per character -- no per-post font switching. Latin stays on
- * Geist because it comes first in --font-sans (see globals.css).
- *
- * preload:false is deliberate: next/font emits @font-face with unicode-range,
- * so the browser only fetches this file when Bengali characters are actually on
- * the page. An English-only page pays nothing. Preloading would download it
- * everywhere and undo that.
+ * Literata is the reading face: it was engineered for Google Play Books, so it
+ * is tuned for continuous long-form text rather than for headlines. Only .prose
+ * consumes it, through --serif-stack in globals.css, which is the Medium model
+ * -- sans headings over a serif body. Italic ships too because emphasis inside an article is
+ * common and a synthesised oblique serif looks wrong.
  */
-const notoSansBengali = Noto_Sans_Bengali({
-  variable: "--font-bengali",
+const literata = Literata({
+  variable: "--font-literata",
+  subsets: ["latin", "latin-ext"],
+  style: ["normal", "italic"],
+  display: "swap",
+  /*
+   * preload:false for the same reason as the Bengali faces below, but on a
+   * route basis rather than a script one: only .prose consumes this, and .prose
+   * exists on two routes. Preloading it (the next/font default) put four
+   * render-blocking font preloads -- normal and italic, latin and latin-ext --
+   * on the home page, which has no article text to render with them. The
+   * size-adjusted fallback next/font generates keeps the swap from shifting
+   * layout, so an article pays one extra round trip and nothing else does.
+   */
+  preload: false,
+});
+
+/*
+ * Geist has no Bengali glyphs, so Bengali codepoints fall through to these
+ * faces automatically, per character -- no per-post font switching. Latin stays
+ * on Geist/Literata because they come first in --sans-stack / --serif-stack
+ * (see globals.css).
+ *
+ * Two Bengali faces, mirroring the Latin split: Hind Siliguri is a digital-UI
+ * Bangla face and backs the sans stack (chrome, headings, cards); Tiro Bangla
+ * is a book serif from the Murty Classical Library lineage and backs the serif
+ * stack, so Bangla article bodies read as typeset prose rather than as UI text.
+ *
+ * preload:false is deliberate on both: next/font emits @font-face with
+ * unicode-range, so the browser only fetches these when Bengali characters are
+ * actually on the page. An English-only page pays nothing. Preloading would
+ * download them everywhere and undo that.
+ */
+const hindSiliguri = Hind_Siliguri({
+  variable: "--font-bengali-sans",
   subsets: ["bengali"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
+const tiroBangla = Tiro_Bangla({
+  variable: "--font-bengali-serif",
+  subsets: ["bengali"],
+  weight: "400",
+  style: ["normal", "italic"],
   display: "swap",
   preload: false,
 });
@@ -109,7 +150,7 @@ export default function RootLayout({
         href="/rss.xml"
       />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${notoSansBengali.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${literata.variable} ${hindSiliguri.variable} ${tiroBangla.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -117,6 +158,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <TopTicker />
           <Header />
           {children}
         </ThemeProvider>

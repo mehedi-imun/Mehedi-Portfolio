@@ -1,9 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Container } from "@/components/ui/section";
 import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { Eye, Menu, X } from "lucide-react";
+import { motion, useScroll, useSpring } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -28,6 +30,14 @@ export default function Header() {
   // deriving it during render would desync the active-link classes/aria-current
   // on hydration.
   const [hash, setHash] = useState("");
+
+  // Reading progress, doubling as the header's bottom border.
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 30,
+    mass: 0.2,
+  });
 
   useEffect(() => {
     const syncHash = () => setHash(window.location.hash);
@@ -63,12 +73,17 @@ export default function Header() {
   };
 
   return (
-    <header className=" fixed top-0 left-0 w-full z-50 bg-white/30 dark:bg-black/30 backdrop-blur-xl border-b border-white/10 shadow-md">
-      <div className="max-w-7xl mx-auto px-4 lg:px-0  py-3 flex items-center justify-between">
+    <header className="fixed left-0 top-8 z-50 w-full border-b border-border bg-background/70 backdrop-blur-xl">
+      <motion.div
+        aria-hidden
+        style={{ scaleX: progress }}
+        className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-brand"
+      />
+      <Container className="flex items-center justify-between py-3">
         {/* Logo */}
         <Link
           href="/"
-          className="text-2xl font-bold bg-gradient-to-r from-[#ff914d] to-orange-400 bg-clip-text text-transparent"
+          className="bg-gradient-to-r from-brand to-brand-accent bg-clip-text text-2xl font-bold text-transparent"
         >
           MEHEDI
         </Link>
@@ -81,10 +96,10 @@ export default function Header() {
               href={item.href}
               onClick={(e) => handleClick(e, item.href, item.isSection)}
               className={cn(
-                "text-sm font-medium transition hover:text-[#ff914d] relative after:absolute after:left-0 after:-bottom-0.5 after:h-0.5 after:w-0 after:bg-[#ff914d] after:transition-all hover:after:w-full",
+                "relative text-sm font-medium transition after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-0 after:bg-brand after:transition-all hover:text-brand hover:after:w-full",
                 isActive(item.href)
-                  ? "text-[#ff914d] after:w-full"
-                  : "text-black/80 dark:text-white/80"
+                  ? "text-brand after:w-full"
+                  : "text-foreground/80"
               )}
               aria-current={isActive(item.href) ? "page" : undefined}
             >
@@ -122,11 +137,11 @@ export default function Header() {
             {isOpen ? <X /> : <Menu />}
           </Button>
         </div>
-      </div>
+      </Container>
 
       {/* Mobile Drawer */}
       {isOpen && (
-        <div className="md:hidden px-4 py-4 bg-white/70 dark:bg-black/50 backdrop-blur-lg">
+        <div className="border-t border-border bg-background/95 px-6 py-4 backdrop-blur-lg md:hidden">
           <nav className="space-y-4">
             {navigation.map((item) => (
               <Link
@@ -134,10 +149,8 @@ export default function Header() {
                 href={item.href}
                 onClick={(e) => handleClick(e, item.href, item.isSection)}
                 className={cn(
-                  "block py-2 text-base font-medium transition hover:text-[#ff914d]",
-                  isActive(item.href)
-                    ? "text-[#ff914d]"
-                    : "text-black/80 dark:text-white/80"
+                  "block py-2 text-base font-medium transition hover:text-brand",
+                  isActive(item.href) ? "text-brand" : "text-foreground/80"
                 )}
                 aria-current={isActive(item.href) ? "page" : undefined}
               >
@@ -149,7 +162,7 @@ export default function Header() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2 py-2 text-base font-medium text-black/80 dark:text-white/80 transition hover:text-[#ff914d]"
+              className="flex items-center gap-2 py-2 text-base font-medium text-foreground/80 transition hover:text-brand"
             >
               Resume <Eye className="h-4 w-4" />
             </a>
