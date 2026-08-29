@@ -75,12 +75,44 @@ export function blogPostingSchema(post: BlogPost) {
     url,
     mainEntityOfPage: url,
     datePublished: post.dateISO,
-    dateModified: post.dateISO,
+    // Falls back to the publication date so an unrevised post does not claim
+    // to have changed; `updated` is the only thing that moves this.
+    dateModified: post.updated ?? post.dateISO,
     keywords: post.tags,
-    inLanguage: "en",
+    // Only posts vary; the site chrome and static pages stay English.
+    inLanguage: post.lang,
     author: { "@id": personId },
     publisher: { "@id": personId },
-    image: absoluteUrl("/opengraph-image"),
+    // A real cover photo beats the generated title card when one exists.
+    image: absoluteUrl(post.cover ?? `/blog/${post.slug}/opengraph-image`),
+  };
+}
+
+export function blogSchema(
+  posts: Pick<BlogPost, "slug" | "title" | "description" | "dateISO" | "lang">[]
+) {
+  const url = absoluteUrl("/blog");
+  return {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "@id": `${url}#blog`,
+    url,
+    name: `${siteConfig.name} - Blog`,
+    description: siteConfig.description,
+    inLanguage: "en",
+    isPartOf: { "@id": websiteId },
+    author: { "@id": personId },
+    publisher: { "@id": personId },
+    blogPost: posts.map((post) => ({
+      "@type": "BlogPosting",
+      "@id": `${absoluteUrl(`/blog/${post.slug}`)}#article`,
+      headline: post.title,
+      description: post.description,
+      url: absoluteUrl(`/blog/${post.slug}`),
+      datePublished: post.dateISO,
+      inLanguage: post.lang,
+      author: { "@id": personId },
+    })),
   };
 }
 
@@ -96,6 +128,7 @@ export function projectSchema(project: Project) {
     dateCreated: project.year,
     keywords: project.tags,
     genre: project.category,
+    // The real cover photo, not the generated card, is the better entity image.
     image: projectOgImage(project),
     creator: { "@id": personId },
     ...(project.liveUrl ? { sameAs: project.liveUrl } : {}),

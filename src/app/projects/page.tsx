@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import ProjectsGrid from "@/components/ProjectsGrid";
-import { projects } from "@/lib/projects";
+import { projectCategories, projects } from "@/lib/projects";
 import { collectionPageSchema } from "@/lib/seo";
 
 const title = "Projects";
@@ -30,7 +30,7 @@ export default function ProjectsPage() {
         {description}
       </p>
 
-      <ProjectsGrid projects={projects} />
+      <ProjectsGrid projects={projects} categories={projectCategories} />
 
       <JsonLd
         schema={collectionPageSchema({

@@ -12,6 +12,15 @@ interface BlogIndexProps {
 }
 
 /**
+ * Bengali conjuncts can be encoded in more than one Unicode normalization form,
+ * so two visually identical words compare unequal unless both sides are folded
+ * to the same form first. Applied to the query and the content equally.
+ */
+function normalizeForSearch(value: string): string {
+  return value.toLowerCase().normalize("NFC");
+}
+
+/**
  * Search and tag filtering only. Kept separate from the route so that
  * app/blog/page.tsx can stay a server component and export metadata.
  */
@@ -20,11 +29,11 @@ export default function BlogIndex({ posts, tags }: BlogIndexProps) {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const filteredPosts = useMemo(() => {
-    const query = searchQuery.toLowerCase();
+    const query = normalizeForSearch(searchQuery);
     return posts.filter((post) => {
       const matchesSearch =
-        post.title.toLowerCase().includes(query) ||
-        post.excerpt.toLowerCase().includes(query);
+        normalizeForSearch(post.title).includes(query) ||
+        normalizeForSearch(post.excerpt).includes(query);
 
       const matchesTags =
         selectedTags.length === 0 ||

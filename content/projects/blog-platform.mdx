@@ -1,0 +1,24 @@
+---
+title: "Blog Platform"
+excerpt: "A minimal blog platform with markdown support."
+description: "A minimal MDX-powered blog platform built on Next.js, with statically generated post pages, tag filtering and per-post OpenGraph images."
+tags: ["Next.js", "MDX", "Tailwind"]
+cover: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
+coverAlt: "An open laptop on a wooden desk"
+category: "Web App"
+year: "2024"
+role: "Full stack developer"
+stack: ["Next.js", "MDX", "Tailwind CSS", "TypeScript"]
+featured: true
+order: 3
+---
+
+A file-based publishing setup where each post is an MDX document. Posts are statically generated at
+build time, so the reading experience is a static document with no client-side data fetching.
+
+## What it does
+
+- MDX authoring with embedded React components inside prose
+- Statically generated post routes via generateStaticParams
+- Per-post OpenGraph images generated at the edge
+- Tag-based filtering and a reading-time estimate derived from word count

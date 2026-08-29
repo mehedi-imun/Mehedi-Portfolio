@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_Bengali } from "next/font/google";
 import JsonLd from "@/components/JsonLd";
 import Header from "@/components/Header";
 import { personSchema, websiteSchema } from "@/lib/seo";
@@ -17,6 +17,23 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
   display: "swap",
+});
+
+/*
+ * Geist has no Bengali glyphs, so Bengali codepoints fall through to this face
+ * automatically, per character -- no per-post font switching. Latin stays on
+ * Geist because it comes first in --font-sans (see globals.css).
+ *
+ * preload:false is deliberate: next/font emits @font-face with unicode-range,
+ * so the browser only fetches this file when Bengali characters are actually on
+ * the page. An English-only page pays nothing. Preloading would download it
+ * everywhere and undo that.
+ */
+const notoSansBengali = Noto_Sans_Bengali({
+  variable: "--font-bengali",
+  subsets: ["bengali"],
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -78,8 +95,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      {/*
+       * Feed discovery. Deliberately a real element rather than
+       * `alternates.types` in the metadata above: Next replaces the whole
+       * `alternates` object when a child page sets its own `canonical`, and
+       * every page here does, so metadata-declared types would reach no page.
+       * React hoists this into <head> on every route.
+       */}
+      <link
+        rel="alternate"
+        type="application/rss+xml"
+        title={`${siteConfig.name} - Blog`}
+        href="/rss.xml"
+      />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSansBengali.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
