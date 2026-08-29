@@ -13,6 +13,13 @@ import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { featuredProjects } from "@/lib/projects";
 
 export default function FeaturedProjects() {
+  /*
+   * With nothing to feature the section would still print its heading and
+   * "Check out some of my recent work" above an empty grid, which reads as a
+   * broken page rather than a new one. Better to omit the section entirely.
+   */
+  if (featuredProjects.length === 0) return null;
+
   return (
     <section className="py-20 max-w-7xl mx-auto px-4 lg:px-0" id="projects">
       <div className="page-container">

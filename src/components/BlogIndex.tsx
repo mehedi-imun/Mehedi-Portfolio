@@ -78,8 +78,15 @@ export default function BlogIndex({ posts, tags }: BlogIndexProps) {
 
       {filteredPosts.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-xl text-muted-foreground">
-            No articles found matching your criteria.
+          {/*
+            * Nothing published at all is a different situation from a filter
+            * that matched nothing -- telling a first visitor their "criteria"
+            * failed, when they never typed any, just reads as broken.
+            */}
+          <p className="text-xl text-muted-foreground normal-case">
+            {posts.length === 0
+              ? "No articles yet. The first one is on its way."
+              : "No articles match your search."}
           </p>
         </div>
       ) : (
