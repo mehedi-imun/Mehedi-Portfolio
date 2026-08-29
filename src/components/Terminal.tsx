@@ -235,6 +235,7 @@ export default function Terminal({ context }: { context: TerminalContext }) {
   const router = useRouter();
   const { setTheme } = useTheme();
   const reducedMotion = usePrefersReducedMotion();
+  const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
   const nextId = useRef(1);
@@ -263,6 +264,14 @@ export default function Terminal({ context }: { context: TerminalContext }) {
    */
   const [hovering, setHovering] = useState(false);
   const [engaged, setEngaged] = useState(false);
+  /*
+   * The demo is an animation loop with no natural end, so it also has to stop
+   * when nobody can see it: scrolled past the hero, or the tab in the
+   * background. Left ungated it competes for the main thread with every
+   * interaction further down the page, which is exactly what INP measures.
+   */
+  const [inView, setInView] = useState(true);
+  const [tabVisible, setTabVisible] = useState(true);
 
   const typingId = typing?.id ?? null;
   const typingSteps = typing?.steps ?? 0;
@@ -272,7 +281,8 @@ export default function Terminal({ context }: { context: TerminalContext }) {
    * Reduced motion opts out entirely: an unprompted animation that also moves
    * the scroll position is exactly what that preference is asking us not to do.
    */
-  const demoRunning = !reducedMotion && !engaged && !hovering;
+  const demoRunning =
+    !reducedMotion && !engaged && !hovering && inView && tabVisible;
 
   const suggestions = useMemo(
     () => suggestInput(input, context),
@@ -410,6 +420,26 @@ export default function Terminal({ context }: { context: TerminalContext }) {
   useEffect(() => {
     runLineRef.current = runLine;
   });
+
+  useEffect(() => {
+    const node = rootRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.2 }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onVisibilityChange = () =>
+      setTabVisible(document.visibilityState === "visible");
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, []);
 
   /*
    * The demo itself. Every state write happens inside a timer continuation
@@ -550,6 +580,7 @@ export default function Terminal({ context }: { context: TerminalContext }) {
      * nothing saying what it is.
      */
     <div
+      ref={rootRef}
       role="region"
       aria-label="Interactive terminal - explore this site's data from the command line"
       onMouseEnter={() => setHovering(true)}
