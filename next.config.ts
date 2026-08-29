@@ -3,18 +3,15 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   images: {
     /**
-     * Wildcard host: any https image URL can be passed to next/image without
-     * adding it here first.
-     *
-     * Trade-off: this makes /_next/image an open image proxy, so third parties
-     * can route their own images through it at your cost. To lock it down later,
-     * replace the "**" entry with the specific hosts in use, e.g.
-     *   { protocol: "https", hostname: "images.unsplash.com" }
+     * Only hosts actually referenced by content belong here. A "**" wildcard
+     * turns /_next/image into an open image proxy that third parties can route
+     * their own images through at this project's cost, so new hosts are added
+     * deliberately rather than allowed by default.
      */
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "images.unsplash.com",
       },
     ],
   },

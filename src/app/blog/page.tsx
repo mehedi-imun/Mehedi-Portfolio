@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import BlogIndex from "@/components/BlogIndex";
 import JsonLd from "@/components/JsonLd";
 import { allTags, blogPostSummaries } from "@/lib/blog";
-import { collectionPageSchema } from "@/lib/seo";
+import { blogSchema, collectionPageSchema } from "@/lib/seo";
 
 const title = "Blog";
 const description =
@@ -33,15 +33,18 @@ export default function BlogPage() {
       <BlogIndex posts={blogPostSummaries} tags={allTags} />
 
       <JsonLd
-        schema={collectionPageSchema({
-          path: "/blog",
-          name: "Blog",
-          description,
-          items: blogPostSummaries.map((post) => ({
-            name: post.title,
-            path: `/blog/${post.slug}`,
-          })),
-        })}
+        schema={[
+          blogSchema(blogPostSummaries),
+          collectionPageSchema({
+            path: "/blog",
+            name: "Blog",
+            description,
+            items: blogPostSummaries.map((post) => ({
+              name: post.title,
+              path: `/blog/${post.slug}`,
+            })),
+          }),
+        ]}
       />
     </main>
   );

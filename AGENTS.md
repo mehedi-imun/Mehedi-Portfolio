@@ -7,7 +7,7 @@ Personal portfolio site for Mehedi Imun (mehedi-imun). Fully static — no backe
 ## Stack
 
 - Next.js 16 (App Router, Turbopack default) + React 19, TypeScript `strict`
-- Tailwind CSS **v4** — CSS-first config: all theme tokens live in `src/app/globals.css` (`@theme inline` + `:root`). There is **no** `tailwind.config.*` file.
+- Tailwind CSS **v4** — CSS-first config: all theme tokens live in `src/app/globals.css` (`@theme inline` + `:root`). There is **no** `tailwind.config.*` file. Plugins are registered in CSS too — `@plugin "@tailwindcss/typography";` sits directly under the `@import` lines.
 - shadcn/ui (`new-york` style, see `components.json`) — primitives in `src/components/ui/`, add new ones via `npx shadcn@latest add <component>`
 - `motion` v13 (`motion/react`, not `framer-motion`) for animation, `next-themes` for dark mode, `lucide-react` v1 icons
 - Path alias: `@/*` → `src/*`
@@ -34,6 +34,10 @@ Four data modules are the single source of truth. Adding or editing content mean
 | `lib/site.ts` | `siteConfig` (name, URLs, socials, keywords), `absoluteUrl()` | every metadata block, sitemap, robots, JSON-LD |
 | `lib/blog.ts` | `BlogPost[]`, `blogPostSummaries`, `allTags`, `getPostBySlug()` | `/blog`, `/blog/[slug]`, sitemap |
 | `lib/projects.ts` | `Project[]`, `featuredProjects`, `projectCategories`, `getProjectBySlug()`, `projectOgImage()` | `/projects`, `/projects/[slug]`, home page, sitemap |
+| `lib/content.ts` | `resolveSlug()`, `assertUniqueSlugs()` | `lib/blog.ts`, `lib/projects.ts` |
+| `lib/images.ts` | `localImageDimensions()` | MDX `img`, blog cover hero |
+| `lib/lang.ts` | `dirFor()`, `ogLocaleFor()`, `isRtl()` | `/blog/[slug]`, blog OG image |
+| `lib/mdx.ts` | `mdxOptions`, `getTableOfContents()` | `/blog/[slug]`, `/projects/[slug]` |
 | `lib/experience.ts` | `experienceGroups`, `allExperience` | `/about`, `personSchema()` |
 
 Conventions to preserve when editing these:
@@ -54,7 +58,156 @@ Consequence: changing the domain, name or job title means editing `lib/site.ts` 
 
 Pages and layouts are server components that export `metadata` / `generateMetadata`. Dynamic routes pre-render via `generateStaticParams()` and call `notFound()` on an unknown slug (a real 404, not a 200 "not found" screen). Interactive pieces are separate `"use client"` leaves — `BlogIndex`, `ProjectsGrid`, `BlogPostInteractions`, `CommentSection`, `Header`, `ThemeToggle`. Keep this split: making a page a client component silently kills its `metadata` export.
 
-Blog post bodies are trusted HTML strings in `blog.ts`, rendered with `dangerouslySetInnerHTML` and styled by `prose` classes.
+Blog post bodies are MDX files in `content/blog/`. The URL comes from the **`slug` frontmatter
+field**; when it is absent the filename is used instead, so a file can be renamed freely as long as
+it declares its slug. `src/lib/content.ts` owns both rules for blog and projects alike: slugs must be
+lowercase ASCII words joined by single hyphens, and **duplicates fail the build** naming both files —
+which matters precisely because a collision between two frontmatter slugs is invisible from the
+filenames. `blog.ts`
+reads their frontmatter synchronously (`readFileSync` at module scope) and validates it with zod, so a
+bad `date` or a missing `excerpt` fails the build instead of shipping broken JSON-LD. Keep that read
+synchronous: `blogPosts`, `allTags`, `sitemap.ts` and `generateStaticParams()` all depend on it. Only
+the body is async — `BlogPost.content` carries raw MDX, compiled by `<MDXRemote>` in the article's
+server component and styled by `prose` classes.
+
+`date` and `readTime` are **derived** (from `dateISO` and the body word count at 200 wpm); do not
+hand-write them. Publishing is: add one `.mdx` file, `git push`.
+
+### Projects are files too
+
+`content/projects/*.mdx`, same shape as the blog: optional `slug` frontmatter falling back to the
+filename, zod-validated frontmatter, MDX body as the case study. Adding a project is one file;
+removing it is deleting that file. There is **no `id`** — React keys use `slug`. `category` is an open string, and
+`projectCategories` is derived from the categories actually present, so the filter can never show an
+empty one. `featuredProjects` is capped at 3 to match the `lg:grid-cols-3` homepage grid; a 4th
+featured project used to leave an orphan card on its own row.
+
+The detail page is a case study, ordered for someone scanning it: cover, then a **summary panel**
+(role, year, timeline, stack, live/source links), then the MDX body, then optional `outcomes`, then
+an optional `gallery`, then prev/next and a contact CTA. Role and stack deliberately sit *above* the
+body — putting them at the end meant reading the whole case study to learn what the work even was.
+
+`outcomes`, `gallery` and `timeline` are all optional; a project renders fine with none of them. In
+`gallery`, `alt` is required — a screenshot nobody described is invisible to a screen reader — and
+`caption` is not. Gallery images use bare filenames like everything else.
+
+`ProjectsGrid` is a client component and therefore **must not import a runtime value** from
+`lib/projects.ts` — that module reads the filesystem, and importing anything but a type pulls
+`node:fs` into the client bundle and fails the build. Categories are passed in as a prop for exactly
+this reason. The same rule governs `BlogIndex` and `lib/blog.ts`.
+
+### Content layout
+
+A post or project is one `.mdx` file. There is no scaffolding step and no folder
+convention to follow.
+
+```
+content/blog/my-post.mdx
+content/projects/my-project.mdx
+public/                        <- images go anywhere in here
+```
+
+**Images: drop the file in `public/`, copy its path, paste it in.** The path is what
+you get by removing the `public` prefix, so `public/images/hero.png` is written as
+`/images/hero.png`. That single form works for `cover`, for Markdown images, for
+`<Figure>` and for a project `gallery`.
+
+Paths must start with `/` (or be a full `https://` URL). A bare `hero.png` is
+rejected at build time, because the browser would resolve it relative to the
+current URL — appearing to work on one page and 404ing on another.
+
+A **missing local image fails the build**, naming the expected path. It used to
+return null, which made the article hero silently disappear.
+
+### Images
+
+`cover` + `coverAlt` frontmatter feeds the hero, the card thumbnail, `og:image` and
+JSON-LD at once; zod rejects a `cover` without a `coverAlt`. In-body Markdown images
+go through `next/image`, with dimensions measured from disk at build time
+(`lib/images.ts`) — which is why they must live under `public/`. Remote images have
+no build-time dimensions and degrade to a plain `<img>`. `<Figure>` adds the caption
+Markdown cannot express. A post with no `cover` gets a deterministic gradient tile on
+its card rather than a blank space.
+
+`next.config.ts` allowlists only `images.unsplash.com`. Do not restore the `"**"`
+wildcard: it makes `/_next/image` an open proxy that anyone can route their own
+images through at this project's cost.
+
+### Comments
+
+`Comments.tsx` renders giscus (GitHub Discussions) and returns `null` unless all four
+`NEXT_PUBLIC_GISCUS_*` values are set, so an unconfigured deploy shows no widget rather than a broken
+iframe. To turn it on: make the repo public, enable Discussions, install the giscus app, then take
+the four ids from giscus.app and set them in Vercel. Threads are mapped by slug, so they survive a
+domain change. The previous localStorage comment form and like counter are gone — both were visible
+only to the person who typed them.
+
+### Writing in any language
+
+A post sets `lang:` (BCP-47, default `"en"`); the site chrome stays English. There is no translation
+pairing, no hreflang and no locale-prefixed routing. `lang` drives `inLanguage`, `og:locale`, the
+`<article lang dir>` attributes and the `:lang(bn)` leading override. RTL is derived from the tag
+(`ar|he|fa|ur`) in `src/lib/lang.ts`. Slugs stay ASCII regardless of the post's language, because
+`resolveSlug` rejects anything else — a Bangla title needs no transliteration step, just a `slug`.
+
+Mixed scripts inside one post are the expected case and need no configuration: `--font-sans` is
+`Geist, Noto Sans Bengali, sans-serif`, so the browser falls back **per character** — Latin keeps
+Geist, Bengali codepoints fall through. Two things make that work and are easy to break:
+
+- `body` must carry `font-sans` (`globals.css`). Without it the variables next/font defines are never
+  consumed and everything silently reverts to the system stack.
+- Noto Sans Bengali is loaded `preload: false`. next/font emits `unicode-range`, so an English-only
+  page never downloads it. Preloading would undo that.
+
+`ImageResponse` (OG images) ignores next/font entirely and renders only from the buffers passed in
+`fonts: []`, which is why `public/fonts/*.woff` exists — WOFF, because Satori cannot read WOFF2.
+Those files are copied from the `@fontsource/*` devDependencies. **Known limitation:** Satori does no
+complex-script shaping, so Bengali matras and conjuncts are positioned in logical rather than visual
+order in OG images. Glyphs render (not tofu), but a Bangla OG title will not look exactly like the
+page. Browser rendering is unaffected.
+
+Blog search normalizes to NFC on both sides (`BlogIndex.tsx`) — Bengali sequences like `ড়` have two
+encodings that look identical, and without it the search silently misses.
+
+The MDX pipeline lives in `src/lib/mdx.ts` (`mdxOptions`) and the element overrides in
+`src/components/mdx-components.tsx`. Plugin order is load-bearing: `rehype-slug` assigns heading ids
+before `rehype-autolink-headings` can link to them. Syntax highlighting is `rehype-pretty-code` +
+Shiki at **build time**, so it ships zero client JS — colours are inlined as `--shiki-light` /
+`--shiki-dark` custom properties and selected by the `.dark` class in `globals.css`, not by
+`prefers-color-scheme` (which is what the plugin's own docs show — don't copy that selector back in).
+`keepBackground: false` is deliberate so `.prose pre` keeps the token-based surface.
+
+`getTableOfContents()` parses the raw MDX rather than the rendered tree, so it stays synchronous. It
+must keep using `github-slugger` with a fresh instance per document, exactly as `rehype-slug` does,
+or the anchors stop matching the heading ids. Anchored headings carry `scroll-margin-top` because the
+header is `position: fixed`.
+
+Frontmatter is validated with `strictObject`, so an unknown key is an error rather than being
+silently dropped — a typo'd `tag:` or an invented `published:` would otherwise do nothing at all,
+with no warning. **To publish, delete `draft: true`;** there is no `published` field.
+
+`draft: true` keeps a post out of the index, `/rss.xml`, the sitemap and `generateStaticParams()`,
+while leaving it reachable at its own URL so it can be previewed — that page sets `robots: noindex`
+and shows a draft badge. This is why `getPostBySlug()` reads the internal `allPosts` (drafts
+included) and every listing reads `blogPosts` (published only). Do not collapse the two.
+
+### Cross-posting without losing the ranking
+
+A self-hosted blog cannot match Medium's or Hashnode's built-in distribution, so use them for reach
+while this site keeps the search ranking. The rule is that **the canonical URL must always point back
+to mehediimun.com** — otherwise the mirror outranks the original for its own content, and this site
+gets treated as the duplicate.
+
+1. Publish here first and let it get crawled (check Search Console, usually a day or two).
+2. Then mirror the post, setting the canonical to `https://mehediimun.com/blog/<slug>`:
+   - **dev.to** — `canonical_url:` in the post's frontmatter.
+   - **Hashnode** — "Original article URL" in post settings.
+   - **Medium** — only the *Import story* tool sets `rel=canonical` correctly; pasting into a new
+     draft does not, so never paste.
+3. Link back to the original in the first paragraph, for readers and for the extra signal.
+4. `/rss.xml` exists partly for this: most cross-posting tools take a feed URL as their source.
+
+Never mirror a post whose canonical you cannot set.
 
 ## Gotchas
 
@@ -86,3 +239,13 @@ Do not use for: refactoring, writing scripts from scratch, debugging business lo
 3. `query-docs` with the selected library ID and what to look up in the library's documentation (not single words), scoped to a single concept. If the question spans multiple distinct concepts (e.g. routing and auth and caching), make a separate `query-docs` call per concept with the same library ID, unless the question is about how the concepts interact — combined queries dilute ranking and return shallow results for each topic
 4. Answer using the fetched docs
 <!-- context7 -->
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

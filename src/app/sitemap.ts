@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: absoluteUrl("/contact"), lastModified: buildDate, changeFrequency: "yearly", priority: 0.6 },
   ];
 
+  // projects excludes drafts, as blogPosts does.
   const projectRoutes: MetadataRoute.Sitemap = projects.map((project) => ({
     url: absoluteUrl(`/projects/${project.slug}`),
     lastModified: buildDate,
@@ -25,9 +26,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
+  // blogPosts excludes drafts, so an unpublished post never reaches the sitemap.
   const postRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: absoluteUrl(`/blog/${post.slug}`),
-    lastModified: new Date(post.dateISO),
+    lastModified: new Date(post.updated ?? post.dateISO),
     changeFrequency: "yearly",
     priority: 0.7,
   }));

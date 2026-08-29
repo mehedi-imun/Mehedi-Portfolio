@@ -10,9 +10,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { coverGradient } from "@/lib/content";
 import { featuredProjects } from "@/lib/projects";
 
 export default function FeaturedProjects() {
+  /*
+   * With nothing to feature the section would still print its heading and
+   * "Check out some of my recent work" above an empty grid, which reads as a
+   * broken page rather than a new one. Better to omit the section entirely.
+   */
+  if (featuredProjects.length === 0) return null;
+
   return (
     <section className="py-20 max-w-7xl mx-auto px-4 lg:px-0" id="projects">
       <div className="page-container">
@@ -33,7 +41,7 @@ export default function FeaturedProjects() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {featuredProjects.map((project) => (
             <Card
-              key={project.id}
+              key={project.slug}
               className=" hover:shadow-md transition-shadow relative"
             >
               <GlowingEffect
@@ -44,13 +52,20 @@ export default function FeaturedProjects() {
                 inactiveZone={0.01}
               />
               <div className="aspect-video relative overflow-hidden">
-                <Image
-                  src={project.image}
-                  alt={`${project.title} - ${project.category} built with ${project.tags.join(", ")}`}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-500 hover:scale-105"
-                />
+                {project.cover ? (
+                  <Image
+                    src={project.cover}
+                    alt={project.coverAlt ?? ""}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                  />
+                ) : (
+                  <div
+                    className="h-full w-full"
+                    style={{ backgroundImage: coverGradient(project.slug) }}
+                  />
+                )}
               </div>
               <CardHeader>
                 <CardTitle>

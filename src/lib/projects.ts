@@ -1,5 +1,10 @@
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import { z } from "zod";
+import { assertAssetPath, assertUniqueSlugs, parseFrontmatter, resolveSlug } from "./content";
+import { absoluteUrl } from "./site";
+
 export interface Project {
-  id: number;
   slug: string;
   title: string;
   /** Short line used on cards. */
@@ -7,168 +12,186 @@ export interface Project {
   /** 120-160 chars, used verbatim as the meta description on the detail page. */
   description: string;
   tags: string[];
-  image: string;
-  category: "Web App" | "Website" | "Mobile";
+  /** Absolute URL or public-relative path. */
+  /** Optional. Without one the card falls back to a generated tile. */
+  cover?: string;
+  /** Required whenever `cover` is set. */
+  coverAlt?: string;
+  category: string;
   year: string;
   role: string;
-  featured: boolean;
-  overview: string;
-  highlights: string[];
   stack: string[];
   liveUrl?: string;
   repoUrl?: string;
+  /** How long the work took, e.g. "3 months". Shown in the summary panel. */
+  timeline?: string;
+  /** What the work achieved. A case study without results is just a description. */
+  outcomes?: string[];
+  /** Extra screenshots. Entirely optional -- a project can stand on its cover. */
+  gallery?: { src: string; alt: string; caption?: string }[];
+  featured: boolean;
+  /** Explicit ordering; falls back to year, newest first. */
+  order?: number;
+  draft: boolean;
+  /** Raw MDX case study, replacing the old fixed overview/highlights template. */
+  content: string;
 }
 
-export const projectCategories = ["All", "Web App", "Website", "Mobile"] as const;
+const PROJECTS_DIR = join(process.cwd(), "content", "projects");
 
-export const projects: Project[] = [
-  {
-    id: 1,
-    slug: "e-commerce-platform",
-    title: "E-Commerce Platform",
-    excerpt: "A modern e-commerce platform built with Next.js and Tailwind CSS.",
-    description:
-      "A production e-commerce platform built with Next.js, TypeScript and Tailwind CSS, featuring server-rendered catalogue pages, cart state and Stripe checkout.",
-    tags: ["Next.js", "TypeScript", "Tailwind"],
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    category: "Web App",
-    year: "2025",
-    role: "Full stack developer",
-    featured: true,
-    overview:
-      "A full storefront built around server-rendered catalogue pages so that every product URL is independently crawlable and cacheable. Product data is fetched at the server boundary, cart state lives on the client, and checkout hands off to Stripe.",
-    highlights: [
-      "Server-rendered product and category pages for fast first paint and clean indexable URLs",
-      "Cart and wishlist state persisted client-side and reconciled against server inventory on checkout",
-      "Stripe checkout with webhook-driven order fulfilment and idempotent event handling",
-      "Faceted search across category, price band and availability without a full page reload",
-    ],
-    stack: ["Next.js", "TypeScript", "Tailwind CSS", "PostgreSQL", "Stripe"],
-  },
-  {
-    id: 2,
-    slug: "portfolio-website",
-    title: "Portfolio Website",
-    excerpt: "A responsive portfolio website with dark/light theme toggle.",
-    description:
-      "A responsive developer portfolio built with React, Tailwind CSS and Framer Motion, with system-aware dark mode and animated section transitions.",
-    tags: ["React", "Framer Motion", "Tailwind"],
-    image: "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5",
-    category: "Website",
-    year: "2025",
-    role: "Designer and developer",
-    featured: true,
-    overview:
-      "A personal portfolio designed to load fast on a mobile connection while still feeling animated. Theme preference follows the operating system by default and is persisted once the visitor chooses explicitly.",
-    highlights: [
-      "System-aware dark and light themes with no flash of incorrect theme on first paint",
-      "Motion-driven section reveals that respect the prefers-reduced-motion setting",
-      "Fully responsive layout from 320px through ultrawide breakpoints",
-      "Accessible navigation with keyboard focus states and aria-current on the active route",
-    ],
-    stack: ["React", "Next.js", "Tailwind CSS", "Framer Motion"],
-  },
-  {
-    id: 3,
-    slug: "blog-platform",
-    title: "Blog Platform",
-    excerpt: "A minimal blog platform with markdown support.",
-    description:
-      "A minimal MDX-powered blog platform built on Next.js, with statically generated post pages, tag filtering and per-post OpenGraph images.",
-    tags: ["Next.js", "MDX", "Tailwind"],
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-    category: "Web App",
-    year: "2024",
-    role: "Full stack developer",
-    featured: true,
-    overview:
-      "A file-based publishing setup where each post is an MDX document. Posts are statically generated at build time, so the reading experience is a static document with no client-side data fetching.",
-    highlights: [
-      "MDX authoring with embedded React components inside prose",
-      "Statically generated post routes via generateStaticParams",
-      "Per-post OpenGraph images generated at the edge",
-      "Tag-based filtering and a reading-time estimate derived from word count",
-    ],
-    stack: ["Next.js", "MDX", "Tailwind CSS", "TypeScript"],
-  },
-  {
-    id: 4,
-    slug: "weather-app",
-    title: "Weather App",
-    excerpt: "A weather application with interactive maps and hourly forecasts.",
-    description:
-      "A React weather application with interactive radar maps, hourly and seven-day forecasts, geolocation search and cached API responses.",
-    tags: ["React", "API", "Tailwind"],
-    image: "https://images.unsplash.com/photo-1532074205216-d0e1f4b87368",
-    category: "Web App",
-    year: "2024",
-    role: "Frontend developer",
-    featured: false,
-    overview:
-      "A weather client that keeps the interface responsive on a slow connection by caching forecast responses and rendering the last known state while a refresh is in flight.",
-    highlights: [
-      "Interactive radar overlay with pan and zoom on a tiled map",
-      "Hourly and seven-day forecast views sharing a single normalised data model",
-      "Geolocation lookup with a typeahead city fallback",
-      "Response caching with stale-while-revalidate so the UI never blanks on refetch",
-    ],
-    stack: ["React", "TypeScript", "Tailwind CSS", "OpenWeather API"],
-  },
-  {
-    id: 5,
-    slug: "task-manager",
-    title: "Task Manager",
-    excerpt: "A productivity app for managing daily tasks and projects.",
-    description:
-      "A productivity app built with Next.js, TypeScript and Firebase, offering real-time task sync, project grouping and offline-tolerant optimistic updates.",
-    tags: ["Next.js", "TypeScript", "Firebase"],
-    image: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b",
-    category: "Web App",
-    year: "2023",
-    role: "Full stack developer",
-    featured: false,
-    overview:
-      "A task manager where every mutation is applied optimistically and reconciled against Firestore, so the interface stays usable on an unreliable connection.",
-    highlights: [
-      "Real-time multi-device sync backed by Firestore listeners",
-      "Optimistic create, edit and reorder with rollback on write failure",
-      "Projects, labels and due-date grouping over a single task collection",
-      "Email and OAuth authentication with per-user security rules",
-    ],
-    stack: ["Next.js", "TypeScript", "Firebase", "Tailwind CSS"],
-  },
-  {
-    id: 6,
-    slug: "restaurant-website",
-    title: "Restaurant Website",
-    excerpt: "A responsive website for a local restaurant with online ordering.",
-    description:
-      "A responsive restaurant website with an online ordering flow, built with React, Styled Components and a Node.js ordering API with local schema markup.",
-    tags: ["React", "Styled Components", "Node.js"],
-    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
-    category: "Website",
-    year: "2023",
-    role: "Full stack developer",
-    featured: false,
-    overview:
-      "A local restaurant site where the menu is the primary landing surface. Menu items are server-rendered and marked up with local business structured data so opening hours and location surface directly in search results.",
-    highlights: [
-      "Server-rendered menu with Restaurant and Menu structured data",
-      "Online ordering flow with pickup and delivery slot selection",
-      "Node.js ordering API with order confirmation email",
-      "Local business schema exposing address, hours and price range",
-    ],
-    stack: ["React", "Styled Components", "Node.js", "Express"],
-  },
+/** The homepage grid is lg:grid-cols-3; a 4th featured card would sit alone. */
+const FEATURED_LIMIT = 3;
+
+/* strictObject so an unknown key fails loudly; see the blog module. */
+const frontmatterSchema = z
+  .strictObject({
+    // Optional: the filename is used when this is absent, so existing projects
+    // keep their URLs without being edited.
+    slug: z.string().min(1).optional(),
+    title: z.string().min(1),
+    excerpt: z.string().min(1),
+    description: z.string().min(1),
+    tags: z.array(z.string().min(1)).min(1),
+    cover: z.string().min(1).optional(),
+    coverAlt: z.string().min(1).optional(),
+    category: z.string().min(1),
+    year: z.string().regex(/^\d{4}$/, "must be a four-digit year"),
+    role: z.string().min(1),
+    stack: z.array(z.string().min(1)).min(1),
+    liveUrl: z.url().optional(),
+    repoUrl: z.url().optional(),
+    timeline: z.string().min(1).optional(),
+    outcomes: z.array(z.string().min(1)).min(1).optional(),
+    gallery: z
+    .array(
+      z.object({
+        src: z.string().min(1),
+        // Required, not optional: a screenshot nobody described is invisible to
+        // anyone using a screen reader.
+        alt: z.string().min(1),
+        caption: z.string().min(1).optional(),
+      })
+    )
+    .min(1)
+    .optional(),
+    featured: z.boolean().optional(),
+    order: z.number().int().optional(),
+    draft: z.boolean().optional(),
+  })
+  .refine((data) => !data.cover || Boolean(data.coverAlt), {
+    path: ["coverAlt"],
+    message: "is required when `cover` is set",
+  });
+
+function parseProject(fileName: string): Project {
+  const { data, content } = parseFrontmatter(
+    readFileSync(join(PROJECTS_DIR, fileName), "utf8"),
+    `content/projects/${fileName}`
+  );
+  const parsed = frontmatterSchema.safeParse(data);
+
+  if (!parsed.success) {
+    const problems = parsed.error.issues
+      .map((issue) => `  ${issue.path.join(".") || "(root)"}: ${issue.message}`)
+      .join("\n");
+    throw new Error(`Invalid frontmatter in content/projects/${fileName}:\n${problems}`);
+  }
+
+  // Pulled out of the spread: an absent `slug` key still spreads as undefined
+  // and would overwrite the resolved value.
+  const { slug: frontmatterSlug, ...fields } = parsed.data;
+  const slug = resolveSlug(frontmatterSlug, fileName, "content/projects");
+
+  const context = `content/projects/${fileName}`;
+  if (fields.cover) assertAssetPath(fields.cover, context);
+  fields.gallery?.forEach((item) => assertAssetPath(item.src, context));
+
+  return {
+    ...fields,
+    slug,
+    featured: fields.featured ?? false,
+    draft: fields.draft ?? false,
+    content,
+  };
+}
+
+/** Adjacent projects in display order, for walking the work end to end. */
+export function getProjectNeighbours(slug: string): {
+  previous?: Project;
+  next?: Project;
+} {
+  const index = projects.findIndex((project) => project.slug === slug);
+  if (index === -1) return {};
+  return { previous: projects[index - 1], next: projects[index + 1] };
+}
+
+/** Explicit `order` first, then most recent year. */
+function byDisplayOrder(a: Project, b: Project): number {
+  if (a.order !== undefined || b.order !== undefined) {
+    return (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER);
+  }
+  return b.year.localeCompare(a.year);
+}
+
+/**
+ * Read at module scope, so a missing directory surfaces as a bare ENOENT from
+ * deep inside Next rather than something actionable. Name the cause instead.
+ */
+function readProjectFiles(): string[] {
+  try {
+    return readdirSync(PROJECTS_DIR).filter((fileName) => fileName.endsWith(".mdx"));
+  } catch {
+    throw new Error(
+      `Cannot read content/projects. Every project is a .mdx file in that directory, so it must exist (create it with at least one project). Looked in: ${PROJECTS_DIR}`
+    );
+  }
+}
+
+const parsedProjects = readProjectFiles().map((fileName) => ({
+  fileName,
+  project: parseProject(fileName),
+}));
+
+// Slugs may come from frontmatter, so two files can collide without their
+// filenames revealing it. Fail the build rather than shadow a page.
+assertUniqueSlugs(
+  parsedProjects.map(({ fileName, project }) => ({ fileName, slug: project.slug })),
+  "content/projects"
+);
+
+const allProjects: Project[] = parsedProjects
+  .map(({ project }) => project)
+  .sort(byDisplayOrder);
+
+/** Published projects. Adding one means adding a file; removing one, deleting it. */
+export const projects: Project[] = allProjects.filter((project) => !project.draft);
+
+/** Drafts stay reachable at their own URL for preview, as in the blog module. */
+export function getProjectBySlug(slug: string): Project | undefined {
+  return allProjects.find((project) => project.slug === slug);
+}
+
+export const featuredProjects: Project[] = projects
+  .filter((project) => project.featured)
+  .slice(0, FEATURED_LIMIT);
+
+/**
+ * Derived from the categories actually present, so the filter can never show an
+ * empty category and adding one means only writing it in a frontmatter field.
+ */
+export const projectCategories: string[] = [
+  "All",
+  ...Array.from(new Set(projects.map((project) => project.category))).sort(),
 ];
 
-export const featuredProjects = projects.filter((project) => project.featured);
-
-export function getProjectBySlug(slug: string): Project | undefined {
-  return projects.find((project) => project.slug === slug);
-}
-
-/** Unsplash source images need explicit dimensions to be valid OG images. */
+/**
+ * OG images must be absolute. Remote covers already are; repo-local ones are
+ * resolved against the site URL. Deliberately host-agnostic -- the previous
+ * version appended Unsplash-only query params, which produced a meaningless
+ * relative URL for any project with a local cover.
+ */
 export function projectOgImage(project: Project): string {
-  return `${project.image}?w=1200&h=630&fit=crop&auto=format`;
+  // Without a real cover, the generated card is the only image there is.
+  if (!project.cover) return absoluteUrl(`/projects/${project.slug}/opengraph-image`);
+  return project.cover.startsWith("http") ? project.cover : absoluteUrl(project.cover);
 }

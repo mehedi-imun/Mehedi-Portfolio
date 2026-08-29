@@ -1,11 +1,15 @@
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
+import { ContentImage, mdxComponents } from "@/components/mdx-components";
 import { Button } from "@/components/ui/button";
-import { getProjectBySlug, projectOgImage, projects } from "@/lib/projects";
+import { coverGradient } from "@/lib/content";
+import { mdxOptions } from "@/lib/mdx";
+import { getProjectBySlug, getProjectNeighbours, projects } from "@/lib/projects";
 import { breadcrumbSchema, projectSchema } from "@/lib/seo";
 
 interface PageProps {
@@ -37,21 +41,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: `/projects/${project.slug}`,
       title: project.title,
       description: project.description,
-      images: [
-        {
-          url: projectOgImage(project),
-          width: 1200,
-          height: 630,
-          alt: project.title,
-        },
-      ],
     },
     twitter: {
       card: "summary_large_image",
       title: project.title,
       description: project.description,
-      images: [projectOgImage(project)],
     },
+    /*
+     * og:image is left to opengraph-image.tsx, which is genuinely 1200x630.
+     * Declaring those dimensions for the raw cover would be a lie now that
+     * projectOgImage no longer appends crop params -- and an explicit `images`
+     * here would override the generated card entirely. JSON-LD still points at
+     * the real cover photo via projectSchema.
+     */
   };
 }
 
@@ -63,9 +65,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const related = projects
-    .filter((p) => p.slug !== project.slug && p.category === project.category)
-    .slice(0, 3);
+  // Walking the work in display order beats a category-only list: it reaches
+  // every project rather than only those sharing this one's category.
+  const { previous, next } = getProjectNeighbours(project.slug);
 
   return (
     <main className="max-w-7xl mx-auto px-4 lg:px-0 py-12 mt-20">
@@ -90,89 +92,191 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           </header>
 
           <div className="relative aspect-video rounded-xl overflow-hidden border mb-10">
-            <Image
-              src={project.image}
-              alt={`${project.title} interface - ${project.excerpt}`}
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 768px"
-              className="object-cover"
+            {project.cover ? (
+              <Image
+                src={project.cover}
+                alt={project.coverAlt ?? ""}
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 768px"
+                className="object-cover"
+              />
+            ) : (
+              // No screenshot yet; a tinted panel keeps the page composed
+              // rather than opening on an empty bordered box.
+              <div
+                className="h-full w-full"
+                style={{ backgroundImage: coverGradient(project.slug) }}
+              />
+            )}
+          </div>
+
+          {/*
+            * The facts a reader wants before deciding to read on: what the work
+            * was, when, and with what. These used to sit below the case study,
+            * which meant scrolling the whole thing to learn the role.
+            */}
+          <section
+            aria-labelledby="summary-heading"
+            className="mb-10 rounded-xl border bg-muted/30 p-6"
+          >
+            <h2 id="summary-heading" className="sr-only">
+              Project summary
+            </h2>
+
+            <dl className="grid gap-6 sm:grid-cols-3">
+              <div>
+                <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Role
+                </dt>
+                <dd className="mt-1 font-medium">{project.role}</dd>
+              </div>
+              <div>
+                <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Year
+                </dt>
+                <dd className="mt-1 font-medium">{project.year}</dd>
+              </div>
+              {project.timeline ? (
+                <div>
+                  <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Timeline
+                  </dt>
+                  <dd className="mt-1 font-medium">{project.timeline}</dd>
+                </div>
+              ) : null}
+            </dl>
+
+            <div className="mt-6 border-t pt-6">
+              <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Built with
+              </h3>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {project.stack.map((item) => (
+                  <li key={item} className="rounded-md bg-muted px-3 py-1 text-sm">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {project.liveUrl || project.repoUrl ? (
+              <div className="mt-6 flex flex-wrap gap-3">
+                {project.liveUrl ? (
+                  <Button asChild>
+                    <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+                      View live site
+                    </a>
+                  </Button>
+                ) : null}
+                {project.repoUrl ? (
+                  <Button variant="outline" asChild>
+                    <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
+                      View source
+                    </a>
+                  </Button>
+                ) : null}
+              </div>
+            ) : null}
+          </section>
+
+          {/* Freeform case study, replacing the old fixed Overview/highlights template. */}
+          <div className="prose dark:prose-invert max-w-none mb-10 break-words [overflow-wrap:anywhere] [&_pre]:overflow-x-auto">
+            <MDXRemote
+              source={project.content}
+              components={mdxComponents}
+              options={mdxOptions}
             />
           </div>
 
-          <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">Overview</h2>
-            <p className="text-muted-foreground normal-case">{project.overview}</p>
-          </section>
+          {project.outcomes?.length ? (
+            <section aria-labelledby="outcomes-heading" className="mb-10">
+              <h2 id="outcomes-heading" className="text-2xl font-bold mb-4">
+                Outcomes
+              </h2>
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {project.outcomes.map((outcome) => (
+                  <li
+                    key={outcome}
+                    className="rounded-lg border bg-card p-4 text-muted-foreground normal-case"
+                  >
+                    {outcome}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
 
-          <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">What it does</h2>
-            <ul className="space-y-3">
-              {project.highlights.map((highlight) => (
-                <li
-                  key={highlight}
-                  className="relative pl-6 text-muted-foreground normal-case before:content-[''] before:absolute before:left-0 before:top-2.5 before:w-2 before:h-2 before:bg-[#ff914d] before:rounded-full"
-                >
-                  {highlight}
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">Stack</h2>
-            <div className="flex flex-wrap gap-2">
-              {project.stack.map((item) => (
-                <span key={item} className="text-sm px-3 py-1 bg-muted rounded-md">
-                  {item}
-                </span>
-              ))}
-            </div>
-          </section>
-
-          <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">My role</h2>
-            <p className="text-muted-foreground normal-case">{project.role}</p>
-          </section>
-
-          {(project.liveUrl || project.repoUrl) && (
-            <div className="flex flex-wrap gap-3 mb-10">
-              {project.liveUrl && (
-                <Button asChild>
-                  <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-                    View live site
-                  </a>
-                </Button>
-              )}
-              {project.repoUrl && (
-                <Button variant="outline" asChild>
-                  <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
-                    View source
-                  </a>
-                </Button>
-              )}
-            </div>
-          )}
+          {project.gallery?.length ? (
+            <section aria-labelledby="gallery-heading" className="mb-10">
+              <h2 id="gallery-heading" className="text-2xl font-bold mb-4">
+                Interface
+              </h2>
+              <div className="grid gap-6 sm:grid-cols-2">
+                {project.gallery.map((shot) => (
+                  <figure key={shot.src} className="m-0">
+                    <ContentImage
+                      src={shot.src}
+                      alt={shot.alt}
+                      className="h-auto w-full rounded-lg border"
+                    />
+                    {shot.caption ? (
+                      <figcaption className="mt-2 text-sm text-muted-foreground normal-case">
+                        {shot.caption}
+                      </figcaption>
+                    ) : null}
+                  </figure>
+                ))}
+              </div>
+            </section>
+          ) : null}
         </article>
 
-        {related.length > 0 && (
-          <section className="mt-16 pt-10 border-t">
-            <h2 className="text-2xl font-bold mb-6">More {project.category} work</h2>
-            <ul className="space-y-4">
-              {related.map((item) => (
-                <li key={item.slug}>
-                  <Link
-                    href={`/projects/${item.slug}`}
-                    className="text-lg font-medium hover:text-[#ff914d]"
-                  >
-                    {item.title}
-                  </Link>
-                  <p className="text-muted-foreground normal-case">{item.excerpt}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        {previous || next ? (
+          <nav
+            aria-label="More projects"
+            className="mt-16 grid gap-4 border-t pt-10 sm:grid-cols-2"
+          >
+            {previous ? (
+              <Link
+                href={`/projects/${previous.slug}`}
+                className="group rounded-xl border p-5 transition-shadow hover:shadow-md"
+              >
+                <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Previous
+                </span>
+                <span className="mt-1 block font-medium group-hover:text-[#ff914d]">
+                  {previous.title}
+                </span>
+              </Link>
+            ) : (
+              <span />
+            )}
+            {next ? (
+              <Link
+                href={`/projects/${next.slug}`}
+                className="group rounded-xl border p-5 transition-shadow hover:shadow-md sm:text-right"
+              >
+                <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Next
+                </span>
+                <span className="mt-1 block font-medium group-hover:text-[#ff914d]">
+                  {next.title}
+                </span>
+              </Link>
+            ) : null}
+          </nav>
+        ) : null}
+
+        <section className="mt-10 rounded-xl border bg-muted/30 p-6 text-center">
+          <h2 className="text-lg font-semibold">Building something similar?</h2>
+          <p className="mt-1 text-muted-foreground normal-case">
+            I am open to new work. Tell me what you are planning.
+          </p>
+          <Button asChild className="mt-4">
+            <Link href="/contact">Get in touch</Link>
+          </Button>
+        </section>
       </div>
 
       <JsonLd
