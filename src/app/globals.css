@@ -706,6 +706,24 @@ code[data-theme*=" "] span {
  * all. Hind Siliguri has real 600/700, so Bangla emphasis borrows it while the
  * Latin in the same sentence stays on Literata's true bold.
  */
+/*
+ * Bangla titles outside .prose: the article header, the blog cards, the home
+ * page list and the related-post tiles. None of the leading overrides above
+ * reach them, and the Latin defaults all assume glyphs that sit on the
+ * baseline -- Bangla stacks matras above and below it, so a title that wraps
+ * to two lines collides. shadcn's CardTitle is the worst case: it ships
+ * leading-none, i.e. line-height 1.
+ *
+ * Each of these carries lang from the post's own frontmatter, so an English
+ * title in the same list is untouched. Only a wrapped title is affected either
+ * way -- a single-line title looks exactly as before.
+ */
+article:lang(bn) header h1,
+[data-slot="card-title"]:lang(bn),
+[data-post-title]:lang(bn) {
+  line-height: 1.45;
+}
+
 .prose:lang(bn) :is(strong, b) {
   font-family: var(--font-literata), var(--font-bengali-sans), Georgia, serif;
   font-weight: 600;
