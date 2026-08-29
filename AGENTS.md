@@ -98,40 +98,40 @@ this reason. The same rule governs `BlogIndex` and `lib/blog.ts`.
 
 ### Content layout
 
-Each entry owns a folder of images beside it:
+A post or project is one `.mdx` file. There is no scaffolding step and no folder
+convention to follow.
 
 ```
-content/blog/my-post.mdx          <- the post
-public/blog/my-post/cover.png     <- its images
-public/blog/my-post/diagram.png
+content/blog/my-post.mdx
+content/projects/my-project.mdx
+public/                        <- images go anywhere in here
 ```
 
-Scaffold both at once — the slug and folder cannot drift apart that way:
+**Images: drop the file in `public/`, copy its path, paste it in.** The path is what
+you get by removing the `public` prefix, so `public/images/hero.png` is written as
+`/images/hero.png`. That single form works for `cover`, for Markdown images, for
+`<Figure>` and for a project `gallery`.
 
-```bash
-npm run new:post    "My Post Title"
-npm run new:project "My Project"
-```
+Paths must start with `/` (or be a full `https://` URL). A bare `hero.png` is
+rejected at build time, because the browser would resolve it relative to the
+current URL — appearing to work on one page and 404ing on another.
 
-Inside an entry, images are referenced by **bare filename** and resolved against
-that entry's own folder (`resolveAssetPath` in `lib/content.ts`): `cover: "cover.png"`,
-`![alt](diagram.png)`, `<Figure src="diagram.png" …/>`. Absolute (`/…`) and remote (`https://…`)
-paths are left untouched. Bare names are preferred because they survive a slug rename and cannot be
-copy-pasted into pointing at another post's folder.
-
-A **missing local image fails the build**, naming the expected path. It used to return null, which
-made the article hero silently disappear — a break you would only find in production.
+A **missing local image fails the build**, naming the expected path. It used to
+return null, which made the article hero silently disappear.
 
 ### Images
 
-`cover` + `coverAlt` frontmatter feeds the hero, the card thumbnail, `og:image` and JSON-LD at once;
-zod rejects a `cover` without a `coverAlt`. In-body Markdown images go through `next/image` via the
-`img` override, with dimensions measured from disk at build time (`lib/images.ts`) — which is why
-in-body images must live under `public/`. Remote images have no build-time dimensions and degrade to
-a plain `<img>`. `<Figure>` adds the caption Markdown cannot express.
+`cover` + `coverAlt` frontmatter feeds the hero, the card thumbnail, `og:image` and
+JSON-LD at once; zod rejects a `cover` without a `coverAlt`. In-body Markdown images
+go through `next/image`, with dimensions measured from disk at build time
+(`lib/images.ts`) — which is why they must live under `public/`. Remote images have
+no build-time dimensions and degrade to a plain `<img>`. `<Figure>` adds the caption
+Markdown cannot express. A post with no `cover` gets a deterministic gradient tile on
+its card rather than a blank space.
 
-`next.config.ts` allowlists only `images.unsplash.com`. Do not restore the `"**"` wildcard: it makes
-`/_next/image` an open proxy that anyone can route their own images through at this project's cost.
+`next.config.ts` allowlists only `images.unsplash.com`. Do not restore the `"**"`
+wildcard: it makes `/_next/image` an open proxy that anyone can route their own
+images through at this project's cost.
 
 ### Comments
 

@@ -10,21 +10,26 @@
 const SAFE_SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 /**
- * Every entry keeps its images beside it, in `public/<kind>/<slug>/`.
- *
- * Authors write bare filenames -- `cover.png`, `./diagram.png` -- and they are
- * resolved against that folder. Two reasons this beats writing the full path:
- * the reference survives renaming the post's slug, and it cannot drift to some
- * other post's folder by copy-paste.
+ * Images live anywhere under `public/`, and are referenced by the path you get
+ * from dropping the `public` prefix: a file at `public/images/hero.png` is
+ * written as `/images/hero.png`. There is no folder convention to follow and
+ * nothing to scaffold -- add the file, copy the path, paste it in.
  */
-export function assetBase(kind: "blog" | "projects", slug: string): string {
-  return `/${kind}/${slug}`;
+export function isRemoteAsset(src: string): boolean {
+  return /^[a-z]+:/i.test(src);
 }
 
-export function resolveAssetPath(src: string, base: string): string {
-  // Already absolute, or hosted elsewhere: leave it exactly as written.
-  if (src.startsWith("/") || /^[a-z]+:/i.test(src)) return src;
-  return `${base}/${src.replace(/^\.\//, "")}`;
+/**
+ * A bare `hero.png` would be resolved by the browser relative to the current
+ * URL, so it would appear to work on one page and 404 on another. Rejecting it
+ * outright is clearer than letting that through.
+ */
+export function assertAssetPath(src: string, context: string): void {
+  if (isRemoteAsset(src) || src.startsWith("/")) return;
+  throw new Error(
+    `Invalid image path "${src}" in ${context}. Use the path from the public folder, ` +
+      `starting with a slash -- public/images/hero.png is written as "/images/hero.png".`
+  );
 }
 
 export function resolveSlug(

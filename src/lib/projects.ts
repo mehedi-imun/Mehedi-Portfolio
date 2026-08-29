@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import matter from "gray-matter";
 import { z } from "zod";
-import { assertUniqueSlugs, assetBase, resolveAssetPath, resolveSlug } from "./content";
+import { assertAssetPath, assertUniqueSlugs, resolveSlug } from "./content";
 import { absoluteUrl } from "./site";
 
 export interface Project {
@@ -92,17 +92,13 @@ function parseProject(fileName: string): Project {
   const { slug: frontmatterSlug, ...fields } = parsed.data;
   const slug = resolveSlug(frontmatterSlug, fileName, "content/projects");
 
-  // `cover: "cover.png"` means public/projects/<slug>/cover.png.
-  const base = assetBase("projects", slug);
+  const context = `content/projects/${fileName}`;
+  assertAssetPath(fields.cover, context);
+  fields.gallery?.forEach((item) => assertAssetPath(item.src, context));
 
   return {
     ...fields,
     slug,
-    cover: resolveAssetPath(fields.cover, base),
-    gallery: fields.gallery?.map((item) => ({
-      ...item,
-      src: resolveAssetPath(item.src, base),
-    })),
     featured: fields.featured ?? false,
     draft: fields.draft ?? false,
     content,

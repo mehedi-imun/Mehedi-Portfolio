@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import matter from "gray-matter";
 import { z } from "zod";
-import { assertUniqueSlugs, assetBase, resolveAssetPath, resolveSlug } from "./content";
+import { assertAssetPath, assertUniqueSlugs, resolveSlug } from "./content";
 
 export interface BlogPost {
   id: string;
@@ -28,8 +28,8 @@ export interface BlogPost {
    */
   lang: string;
   /**
-   * Public-relative path to the hero image, e.g. /blog/<slug>/cover.png. Feeds
-   * the post hero, the card thumbnail, og:image and JSON-LD image at once.
+   * Path from the public folder, e.g. "/images/hero.png". Feeds the post hero,
+   * the card thumbnail, og:image and JSON-LD image at once.
    */
   cover?: string;
   /** Required whenever `cover` is set; a decorative hero is still content here. */
@@ -105,8 +105,7 @@ function parsePost(fileName: string): BlogPost {
   const { title, description, excerpt, date, updated, tags, lang, cover, coverAlt, draft } =
     parsed.data;
   const slug = resolveSlug(parsed.data.slug, fileName, "content/blog");
-  // `cover: "cover.png"` means public/blog/<slug>/cover.png.
-  const base = assetBase("blog", slug);
+  if (cover) assertAssetPath(cover, `content/blog/${fileName}`);
 
   return {
     id: slug,
@@ -120,18 +119,13 @@ function parsePost(fileName: string): BlogPost {
     readTime: readTimeFor(content),
     tags,
     lang: lang ?? "en",
-    cover: cover ? resolveAssetPath(cover, base) : undefined,
+    cover,
     coverAlt,
     content,
     draft: draft ?? false,
   };
 }
 
-/**
- * Every post on disk, drafts included, newest first. Only getPostBySlug reads
- * this: a draft stays reachable at its own URL so it can be previewed, while
- * being absent from every listing, the sitemap and generateStaticParams.
- */
 /** A missing directory would otherwise surface as a bare ENOENT from inside Next. */
 function readPostFiles(): string[] {
   try {
@@ -159,7 +153,10 @@ const allPosts: BlogPost[] = parsedPosts
   .map(({ post }) => post)
   .sort((a, b) => b.dateISO.localeCompare(a.dateISO));
 
-/** Published posts, newest first. The filename is the slug. */
+/**
+ * Published posts, newest first. Drafts stay out of every listing but remain
+ * reachable at their own URL via getPostBySlug, for preview.
+ */
 export const blogPosts: BlogPost[] = allPosts.filter((post) => !post.draft);
 
 export const allTags: string[] = Array.from(

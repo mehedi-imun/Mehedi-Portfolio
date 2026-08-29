@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { imageSize } from "image-size";
+import { assertAssetPath, isRemoteAsset } from "./content";
 
 export interface ImageDimensions {
   width: number;
@@ -19,7 +20,9 @@ const dimensionCache = new Map<string, ImageDimensions | null>();
  */
 export function localImageDimensions(src: string): ImageDimensions | null {
   // Hosted elsewhere: no bytes at build time, so the caller degrades instead.
-  if (!src.startsWith("/")) return null;
+  if (isRemoteAsset(src)) return null;
+
+  assertAssetPath(src, "an image reference");
 
   const cached = dimensionCache.get(src);
   if (cached !== undefined) return cached;

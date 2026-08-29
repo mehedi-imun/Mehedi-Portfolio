@@ -5,9 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
-import { ContentImage, createMdxComponents } from "@/components/mdx-components";
+import { ContentImage, mdxComponents } from "@/components/mdx-components";
 import { Button } from "@/components/ui/button";
-import { assetBase } from "@/lib/content";
 import { mdxOptions } from "@/lib/mdx";
 import { getProjectBySlug, getProjectNeighbours, projects } from "@/lib/projects";
 import { breadcrumbSchema, projectSchema } from "@/lib/seo";
@@ -175,7 +174,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           <div className="prose dark:prose-invert max-w-none mb-10 break-words [overflow-wrap:anywhere] [&_pre]:overflow-x-auto">
             <MDXRemote
               source={project.content}
-              components={createMdxComponents(assetBase("projects", project.slug))}
+              components={mdxComponents}
               options={mdxOptions}
             />
           </div>
@@ -209,7 +208,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     <ContentImage
                       src={shot.src}
                       alt={shot.alt}
-                      base=""
                       className="h-auto w-full rounded-lg border"
                     />
                     {shot.caption ? (

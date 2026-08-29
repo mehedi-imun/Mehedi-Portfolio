@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
-import { resolveAssetPath } from "@/lib/content";
 import { localImageDimensions } from "@/lib/images";
 
 /** Markdown images span the prose column; nothing here is above the fold. */
@@ -15,16 +14,13 @@ const IMAGE_SIZES = "(max-width: 768px) 100vw, 768px";
 export function ContentImage({
   src,
   alt = "",
-  base,
   className,
 }: {
   src: string;
   alt?: string;
-  base: string;
   className?: string;
 }) {
-  const resolved = resolveAssetPath(src, base);
-  const dimensions = localImageDimensions(resolved);
+  const dimensions = localImageDimensions(src);
 
   /*
    * Remote images have no build-time dimensions, and next/image cannot render
@@ -33,12 +29,12 @@ export function ContentImage({
    */
   if (!dimensions) {
     // eslint-disable-next-line @next/next/no-img-element -- no dimensions available; see above
-    return <img src={resolved} alt={alt} loading="lazy" decoding="async" className={className} />;
+    return <img src={src} alt={alt} loading="lazy" decoding="async" className={className} />;
   }
 
   return (
     <Image
-      src={resolved}
+      src={src}
       alt={alt}
       width={dimensions.width}
       height={dimensions.height}
@@ -46,43 +42,6 @@ export function ContentImage({
       className={className}
     />
   );
-}
-
-/**
- * Component map for MDX bodies, built per entry.
- *
- * Everything not listed here falls through to the plain HTML element and is
- * styled by the `prose` container, which is deliberate: the fewer elements this
- * overrides, the less that can drift from the typography scale.
- *
- * `base` is the entry's asset folder, which is what lets a post write
- * `![alt](diagram.png)` rather than repeating its own slug in every image.
- * rehype-unwrap-images lifts images out of the <p> Markdown wraps them in --
- * without it the layout breaks and a <figure> would be invalid nesting.
- */
-export function createMdxComponents(base: string) {
-  return {
-    img: (props: ComponentPropsWithoutRef<"img">) => (
-      <ContentImage src={String(props.src ?? "")} alt={props.alt ?? ""} base={base} />
-    ),
-
-    Figure: ({
-      src,
-      alt,
-      caption,
-    }: {
-      src: string;
-      alt: string;
-      caption?: ReactNode;
-    }) => (
-      <figure>
-        <ContentImage src={src} alt={alt} base={base} />
-        {caption ? <figcaption>{caption}</figcaption> : null}
-      </figure>
-    ),
-
-    ...linkComponents,
-  };
 }
 
 const linkComponents = {
@@ -111,3 +70,39 @@ const linkComponents = {
     );
   },
 };
+
+/**
+ * Component map for MDX bodies, built per entry.
+ *
+ * Everything not listed here falls through to the plain HTML element and is
+ * styled by the `prose` container, which is deliberate: the fewer elements this
+ * overrides, the less that can drift from the typography scale.
+ *
+ * `base` is the entry's asset folder, which is what lets a post write
+ * `![alt](diagram.png)` rather than repeating its own slug in every image.
+ * rehype-unwrap-images lifts images out of the <p> Markdown wraps them in --
+ * without it the layout breaks and a <figure> would be invalid nesting.
+ */
+export const mdxComponents = {
+  img: (props: ComponentPropsWithoutRef<"img">) => (
+    <ContentImage src={String(props.src ?? "")} alt={props.alt ?? ""} />
+  ),
+
+  Figure: ({
+    src,
+    alt,
+    caption,
+  }: {
+    src: string;
+    alt: string;
+    caption?: ReactNode;
+  }) => (
+    <figure>
+      <ContentImage src={src} alt={alt} />
+      {caption ? <figcaption>{caption}</figcaption> : null}
+    </figure>
+  ),
+
+  ...linkComponents,
+};
+

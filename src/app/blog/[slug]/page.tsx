@@ -7,11 +7,10 @@ import { notFound } from "next/navigation";
 import BlogPostInteractions from "@/components/BlogPostInteractions";
 import { Comments } from "@/components/Comments";
 import JsonLd from "@/components/JsonLd";
-import { createMdxComponents } from "@/components/mdx-components";
+import { mdxComponents } from "@/components/mdx-components";
 import { Button } from "@/components/ui/button";
 import { blogPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
 import { localImageDimensions } from "@/lib/images";
-import { assetBase } from "@/lib/content";
 import { dirFor, ogLocaleFor } from "@/lib/lang";
 import { getTableOfContents, mdxOptions } from "@/lib/mdx";
 import { blogPostingSchema, breadcrumbSchema } from "@/lib/seo";
@@ -173,7 +172,7 @@ export default async function BlogPostPage({ params }: PageProps) {
             <div className="prose dark:prose-invert max-w-none break-words [overflow-wrap:anywhere] [&_pre]:overflow-x-auto">
               <MDXRemote
                 source={post.content}
-                components={createMdxComponents(assetBase("blog", post.slug))}
+                components={mdxComponents}
                 options={mdxOptions}
               />
             </div>
