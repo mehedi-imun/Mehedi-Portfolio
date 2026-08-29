@@ -213,8 +213,17 @@ export default async function BlogPostPage({ params }: PageProps) {
                       href={`/blog/${related.slug}`}
                       className="block h-full rounded-xl border bg-card p-5 transition-shadow hover:shadow-md"
                     >
-                      <span className="block font-semibold">{related.title}</span>
-                      <span className="mt-2 block text-sm text-muted-foreground line-clamp-2">
+                      <span
+                        lang={related.lang}
+                        data-post-title
+                        className="block font-semibold"
+                      >
+                        {related.title}
+                      </span>
+                      <span
+                        lang={related.lang}
+                        className="mt-2 block text-sm text-muted-foreground line-clamp-2"
+                      >
                         {related.excerpt}
                       </span>
                       <span className="mt-3 block text-xs text-muted-foreground">

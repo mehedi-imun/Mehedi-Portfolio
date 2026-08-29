@@ -20,6 +20,7 @@ interface BlogCardProps {
     readTime: string;
     slug: string;
     tags: string[];
+    lang?: string;
     cover?: string;
     coverAlt?: string;
   };
@@ -66,7 +67,13 @@ export default function BlogCard({ post }: BlogCardProps) {
           <span>•</span>
           <span>{post.readTime}</span>
         </div>
-        <CardTitle className="line-clamp-2">
+        {/*
+         * lang goes on the title block, not the link inside it: the block is
+         * what generates the line boxes, so it is what the Bangla leading
+         * override in globals.css has to land on. It also lets the browser pick
+         * the right face per script and lets a screen reader switch voice.
+         */}
+        <CardTitle lang={post.lang} className="line-clamp-2">
           <Link href={`/blog/${post.slug}`} className="hover:text-brand">
             {post.title}
           </Link>
@@ -83,7 +90,9 @@ export default function BlogCard({ post }: BlogCardProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
-        <p className="text-muted-foreground line-clamp-3">{post.excerpt}</p>
+        <p lang={post.lang} className="text-muted-foreground line-clamp-3">
+          {post.excerpt}
+        </p>
       </CardContent>
       <CardFooter>
         <Button variant="outline" asChild className="w-full">

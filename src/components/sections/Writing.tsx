@@ -5,6 +5,7 @@ import { Section, SectionHeading } from "@/components/ui/section";
 export interface WritingPost {
   slug: string;
   title: string;
+  lang?: string;
   date: string;
   readTime: string;
   tags: string[];
@@ -53,7 +54,11 @@ export default function Writing({ posts }: { posts: WritingPost[] }) {
                 <span className="font-mono text-xs uppercase tracking-[0.22em] text-muted-foreground md:w-40 md:shrink-0">
                   {post.date}
                 </span>
-                <span className="flex-1 text-lg font-medium tracking-tight transition-colors group-hover:text-brand md:text-xl">
+                <span
+                  lang={post.lang}
+                  data-post-title
+                  className="flex-1 text-lg font-medium tracking-tight transition-colors group-hover:text-brand md:text-xl"
+                >
                   {post.title}
                 </span>
                 <span className="font-mono text-xs text-muted-foreground">

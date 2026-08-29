@@ -28,6 +28,7 @@ const TECHNOLOGY_COUNT = 17;
 const writingPosts = blogPostSummaries.slice(0, 5).map((post) => ({
   slug: post.slug,
   title: post.title,
+  lang: post.lang,
   date: post.date,
   readTime: post.readTime,
   tags: post.tags,
