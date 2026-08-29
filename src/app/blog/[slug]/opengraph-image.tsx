@@ -22,8 +22,8 @@ const readFont = (file: string) => readFileSync(join(FONT_DIR, file));
 const fonts = [
   { name: "Geist", data: readFont("geist-sans-latin-400-normal.woff"), weight: 400 as const, style: "normal" as const },
   { name: "Geist", data: readFont("geist-sans-latin-700-normal.woff"), weight: 700 as const, style: "normal" as const },
-  { name: "Noto Sans Bengali", data: readFont("noto-sans-bengali-bengali-400-normal.woff"), weight: 400 as const, style: "normal" as const },
-  { name: "Noto Sans Bengali", data: readFont("noto-sans-bengali-bengali-700-normal.woff"), weight: 700 as const, style: "normal" as const },
+  { name: "Hind Siliguri", data: readFont("hind-siliguri-bengali-400-normal.woff"), weight: 400 as const, style: "normal" as const },
+  { name: "Hind Siliguri", data: readFont("hind-siliguri-bengali-700-normal.woff"), weight: 700 as const, style: "normal" as const },
 ];
 
 export const alt = "Blog post";
@@ -62,7 +62,7 @@ export default async function BlogPostOpengraphImage({ params }: Props) {
           background: "#0a0a0a",
           color: "#fafafa",
           // Latin first; Satori falls through to the Bengali face per glyph.
-          fontFamily: "Geist, 'Noto Sans Bengali'",
+          fontFamily: "Geist, 'Hind Siliguri'",
         }}
       >
         <div

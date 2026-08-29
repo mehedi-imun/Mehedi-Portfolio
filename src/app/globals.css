@@ -11,12 +11,24 @@
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-accent: var(--brand-accent);
   /*
-   * Latin first so English keeps Geist; Bengali codepoints fall through to
-   * Noto Sans Bengali per character. This is browser-native font fallback, so
-   * a post mixing Bangla prose with English technical terms needs no config.
+   * Latin first so English keeps its face; Bengali codepoints fall through to
+   * the Bengali face per character. This is browser-native font fallback, so a
+   * post mixing Bangla prose with English technical terms needs no config.
+   *
+   * Three stacks, each pairing a Latin face with the Bengali face of matching
+   * voice: --font-sans is the UI (Geist + Hind Siliguri), --font-serif is the
+   * reading face used by .prose only (Literata + Tiro Bangla), --font-mono is
+   * code (Geist Mono + Hind Siliguri).
+   *
+   * The stacks themselves are spelled out once, on `body` below, and these
+   * tokens only alias them -- see the comment there for why they cannot live on
+   * :root. Tailwind's `inline` mode substitutes a token into the utility it
+   * generates, so `.font-sans` becomes `font-family: var(--sans-stack)` and
+   * resolves on whatever element inside body carries the class.
    */
-  --font-sans: var(--font-geist-sans), var(--font-bengali), sans-serif;
-  --font-mono: var(--font-geist-mono), var(--font-bengali), monospace;
+  --font-sans: var(--sans-stack);
+  --font-serif: var(--serif-stack);
+  --font-mono: var(--mono-stack);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -155,12 +167,29 @@
   }
   body {
     /*
-     * font-sans is load-bearing, not decoration. next/font defines
-     * --font-geist-sans and --font-bengali on <body>, but nothing consumed them,
-     * so the whole site silently fell back to the browser's system stack --
-     * Geist was never actually applied, and Bengali resolved to whatever face
-     * the visitor's OS happened to have. This is what activates the
-     * Latin-then-Bengali stack declared in @theme above.
+     * The three stacks are re-declared here, on the element next/font actually
+     * puts --font-geist-sans and friends on. A custom property is substituted at
+     * computed-value time on the element that declares it, so the same
+     * declaration made on :root would reference variables that do not exist
+     * there, become invalid, and inherit down as unset -- which is exactly how
+     * hand-written `var(--font-sans)` rules silently render in the system face.
+     * Declared on body they resolve, and every descendant inherits a real stack.
+     *
+     * The @theme tokens above stay as they are: Tailwind's `inline` mode
+     * substitutes them into utilities literally, so `font-sans` as a class is
+     * resolved at its use site and works. These are for hand-written CSS only.
+     */
+    --sans-stack: var(--font-geist-sans), var(--font-bengali-sans), sans-serif;
+    --serif-stack: var(--font-literata), var(--font-bengali-serif), Georgia, serif;
+    --mono-stack: var(--font-geist-mono), var(--font-bengali-sans), monospace;
+
+    /*
+     * font-sans is load-bearing, not decoration. next/font defines the font
+     * variables on <body>, but nothing consumed them, so the whole site silently
+     * fell back to the browser's system stack -- Geist was never actually
+     * applied, and Bengali resolved to whatever face the visitor's OS happened
+     * to have. This is what activates the Latin-then-Bengali stack declared in
+     * @theme above.
      */
     @apply bg-background text-foreground font-sans;
   }
@@ -457,6 +486,19 @@
  * rules here win the cascade without needing !important or extra specificity.
  */
 .prose {
+  /*
+   * The reading face. Headings drop back to --font-sans below, which is the
+   * Medium/Hashnode split: a sans voice announces, a serif voice reads. 18px at
+   * 1.75 is the long-form comfort zone; the hair of negative tracking
+   * compensates for Literata's generous default sidebearings at that size.
+   */
+  font-family: var(--serif-stack);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  letter-spacing: -0.003em;
+  /* Literata carries an optical-size axis -- let the browser drive it. */
+  font-optical-sizing: auto;
+
   --tw-prose-body: var(--foreground);
   --tw-prose-headings: var(--foreground);
   --tw-prose-lead: var(--muted-foreground);
@@ -490,6 +532,38 @@
   --tw-prose-invert-pre-bg: var(--muted);
   --tw-prose-invert-th-borders: var(--border);
   --tw-prose-invert-td-borders: var(--border);
+}
+
+/*
+ * Headings stay on the UI sans so an article's structure reads in the same
+ * voice as the rest of the site, and only its body switches to the book face.
+ */
+.prose :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--sans-stack);
+  letter-spacing: -0.02em;
+}
+
+/*
+ * Preflight already puts code/pre on the mono stack, but .prose now sets a
+ * font-family on the container -- pin it here so the reset can never regress
+ * a code block into the serif face.
+ */
+.prose :is(code, kbd, samp, pre) {
+  font-family: var(--mono-stack);
+}
+
+/* Captions are apparatus, not prose: keep them in the UI voice. */
+.prose figcaption {
+  font-family: var(--sans-stack);
+}
+
+/*
+ * ...except the one rehype-pretty-code emits for a titled code fence, which
+ * labels the block below it. That reads as part of the code, so it follows the
+ * code block rather than the image-caption rule above.
+ */
+.prose figcaption[data-rehype-pretty-code-title] {
+  font-family: var(--mono-stack);
 }
 
 /*
@@ -579,13 +653,62 @@ code[data-theme*=" "] span {
  * for Latin lets glyphs collide. English mixed inside a Bangla article inherits
  * the taller leading, which is correct -- the line box has to clear the tallest
  * glyph on the line either way.
+ *
+ * letter-spacing resets to normal: the negative tracking above is a Latin
+ * correction, and applying it to Bengali pulls conjuncts and their matras into
+ * each other. Bengali also carries a smaller effective x-height than Latin at
+ * the same em size, hence the size bump.
  */
 .prose:lang(bn) {
-  line-height: 1.9;
+  font-size: 1.1875rem;
+  /*
+   * 1.7, down from the 1.9 this started at: Tiro Bangla is a book face and
+   * already carries generous ascent/descent metrics, so a Latin-derived
+   * multiplier lands on top of leading the font itself supplies and the lines
+   * drift apart. 1.7 still clears the tallest matra-over-conjunct stack (32px
+   * of box for a 19px em) while keeping successive lines close enough to track
+   * as one paragraph.
+   */
+  line-height: 1.7;
+  letter-spacing: normal;
+  /* Bengali is not hyphenated, and a break mid-word reads as a typo. */
+  hyphens: none;
+  /*
+   * The wrapper sets overflow-wrap:anywhere for long Latin URLs. Bengali words
+   * have no break opportunities, so `anywhere` lets one break at an arbitrary
+   * grapheme with nothing to signal it. `break-word` only breaks a word that
+   * genuinely cannot fit, which is the Latin case it was added for.
+   */
+  overflow-wrap: break-word;
+  text-wrap: pretty;
 }
 
-.prose:lang(bn) :is(h1, h2, h3, h4) {
+/*
+ * Block spacing has to be read against the leading, not against the font size.
+ * At 1.8 the gap between two lines is ~34px, and prose's default 1.25em block
+ * margin is ~24px -- so a paragraph boundary was *tighter* than the lines
+ * inside it and the whole article ran together as one slab.
+ */
+.prose:lang(bn) :is(p, ul, ol, blockquote) {
+  margin-block: 1.7em;
+}
+
+.prose:lang(bn) :is(h1, h2, h3, h4, h5, h6) {
   line-height: 1.5;
+  letter-spacing: normal;
+  text-wrap: balance;
+}
+
+/*
+ * Tiro Bangla ships a single weight (400). Asking for bold gets a synthesised
+ * face -- the browser smears the outline sideways, which on Bengali thickens
+ * conjuncts and matras into each other and is visibly worse than no bold at
+ * all. Hind Siliguri has real 600/700, so Bangla emphasis borrows it while the
+ * Latin in the same sentence stays on Literata's true bold.
+ */
+.prose:lang(bn) :is(strong, b) {
+  font-family: var(--font-literata), var(--font-bengali-sans), Georgia, serif;
+  font-weight: 600;
 }
 
 /* GFM tables: prose styles the cells, but the wrapper must be able to scroll. */

@@ -150,18 +150,45 @@ pairing, no hreflang and no locale-prefixed routing. `lang` drives `inLanguage`,
 (`ar|he|fa|ur`) in `src/lib/lang.ts`. Slugs stay ASCII regardless of the post's language, because
 `resolveSlug` rejects anything else — a Bangla title needs no transliteration step, just a `slug`.
 
-Mixed scripts inside one post are the expected case and need no configuration: `--font-sans` is
-`Geist, Noto Sans Bengali, sans-serif`, so the browser falls back **per character** — Latin keeps
-Geist, Bengali codepoints fall through. Two things make that work and are easy to break:
+#### Two font stacks, each with a matching Bengali face
+
+There are two stacks, declared in `@theme inline` in `globals.css` and defined in `layout.tsx`:
+
+| Token | Latin | Bengali | Used by |
+|---|---|---|---|
+| `--font-sans` | Geist | Hind Siliguri | site chrome, cards, **and `.prose` headings** |
+| `--font-serif` | Literata | Tiro Bangla | `.prose` body copy only |
+| `--font-mono` | Geist Mono | Hind Siliguri | code, `pre`, `kbd` |
+
+This is the Medium/Hashnode split — a sans voice announces, a serif voice reads. Literata was
+engineered for Google Play Books and Tiro Bangla descends from the Murty Classical Library
+typeface, so both are long-form reading faces rather than UI faces; Hind Siliguri is the opposite,
+a digital-UI Bangla design that sits next to Geist without clashing.
+
+Mixed scripts inside one post are the expected case and need no configuration: the Latin face comes
+first in each stack, so the browser falls back **per character** — Latin keeps Geist/Literata,
+Bengali codepoints fall through to Hind Siliguri/Tiro Bangla. Things that make that work and are
+easy to break:
 
 - `body` must carry `font-sans` (`globals.css`). Without it the variables next/font defines are never
   consumed and everything silently reverts to the system stack.
-- Noto Sans Bengali is loaded `preload: false`. next/font emits `unicode-range`, so an English-only
-  page never downloads it. Preloading would undo that.
+- Both Bengali faces are loaded `preload: false`. next/font emits `unicode-range`, so an English-only
+  page never downloads either. Preloading would undo that.
+- Literata is `preload: false` too, for the route reason rather than the script one: only `.prose`
+  uses it and only two routes render `.prose`, so the default (preload on) put four unused font
+  preloads on the home page.
+- `.prose` sets `font-family` on the container, so `code`/`pre`/`kbd` and `figcaption` are pinned
+  back explicitly. Preflight already puts code on the mono stack, but that pin is what stops a reset
+  change from regressing a code block into the serif face.
+- `.prose:lang(bn)` resets `letter-spacing` to `normal`. The slight negative tracking on `.prose` is
+  a Latin correction; applied to Bengali it pulls conjuncts into their matras.
 
 `ImageResponse` (OG images) ignores next/font entirely and renders only from the buffers passed in
 `fonts: []`, which is why `public/fonts/*.woff` exists — WOFF, because Satori cannot read WOFF2.
-Those files are copied from the `@fontsource/*` devDependencies. **Known limitation:** Satori does no
+Those files are copied from the `@fontsource/*` devDependencies (**both** OG routes read them:
+`blog/[slug]` and `projects/[slug]` — changing one and not the other fails the build at page-data
+collection). OG cards use the sans pair (Geist + Hind Siliguri); the serif pair is a reading face and
+does not belong on a 1200×630 card. **Known limitation:** Satori does no
 complex-script shaping, so Bengali matras and conjuncts are positioned in logical rather than visual
 order in OG images. Glyphs render (not tofu), but a Bangla OG title will not look exactly like the
 page. Browser rendering is unaffected.
