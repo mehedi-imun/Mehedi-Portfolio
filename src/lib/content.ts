@@ -1,3 +1,5 @@
+import matter from "gray-matter";
+
 /**
  * Slug rules shared by the blog and project content modules.
  *
@@ -8,6 +10,28 @@
 
 /** Lowercase ASCII words joined by single hyphens. Anything else makes a bad URL. */
 const SAFE_SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+/**
+ * gray-matter surfaces a raw YAMLException that names neither the file nor the
+ * likely cause, and whose line number points at the closing `---` rather than
+ * the offending line. Re-throw with both.
+ */
+export function parseFrontmatter(
+  raw: string,
+  context: string
+): { data: Record<string, unknown>; content: string } {
+  try {
+    const { data, content } = matter(raw);
+    return { data, content };
+  } catch (cause) {
+    const detail = cause instanceof Error ? cause.message : String(cause);
+    throw new Error(
+      `Could not parse the frontmatter in ${context}.\n\n${detail}\n\n` +
+        `The usual cause is a missing space after a colon: write \`draft: true\`, not \`draft:true\`. ` +
+        `Also check that every value containing a colon is quoted.`
+    );
+  }
+}
 
 /**
  * Images live anywhere under `public/`, and are referenced by the path you get

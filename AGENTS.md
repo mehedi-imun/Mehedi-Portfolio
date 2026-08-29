@@ -182,6 +182,10 @@ must keep using `github-slugger` with a fresh instance per document, exactly as 
 or the anchors stop matching the heading ids. Anchored headings carry `scroll-margin-top` because the
 header is `position: fixed`.
 
+Frontmatter is validated with `strictObject`, so an unknown key is an error rather than being
+silently dropped — a typo'd `tag:` or an invented `published:` would otherwise do nothing at all,
+with no warning. **To publish, delete `draft: true`;** there is no `published` field.
+
 `draft: true` keeps a post out of the index, `/rss.xml`, the sitemap and `generateStaticParams()`,
 while leaving it reachable at its own URL so it can be previewed — that page sets `robots: noindex`
 and shows a draft badge. This is why `getPostBySlug()` reads the internal `allPosts` (drafts

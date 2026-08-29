@@ -1,8 +1,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import matter from "gray-matter";
 import { z } from "zod";
-import { assertAssetPath, assertUniqueSlugs, resolveSlug } from "./content";
+import { assertAssetPath, assertUniqueSlugs, parseFrontmatter, resolveSlug } from "./content";
 import { absoluteUrl } from "./site";
 
 export interface Project {
@@ -43,8 +42,9 @@ const PROJECTS_DIR = join(process.cwd(), "content", "projects");
 /** The homepage grid is lg:grid-cols-3; a 4th featured card would sit alone. */
 const FEATURED_LIMIT = 3;
 
+/* strictObject so an unknown key fails loudly; see the blog module. */
 const frontmatterSchema = z
-  .object({
+  .strictObject({
     // Optional: the filename is used when this is absent, so existing projects
     // keep their URLs without being edited.
     slug: z.string().min(1).optional(),
@@ -84,7 +84,10 @@ const frontmatterSchema = z
   });
 
 function parseProject(fileName: string): Project {
-  const { data, content } = matter(readFileSync(join(PROJECTS_DIR, fileName), "utf8"));
+  const { data, content } = parseFrontmatter(
+    readFileSync(join(PROJECTS_DIR, fileName), "utf8"),
+    `content/projects/${fileName}`
+  );
   const parsed = frontmatterSchema.safeParse(data);
 
   if (!parsed.success) {

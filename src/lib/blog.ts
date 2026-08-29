@@ -1,8 +1,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import matter from "gray-matter";
 import { z } from "zod";
-import { assertAssetPath, assertUniqueSlugs, resolveSlug } from "./content";
+import { assertAssetPath, assertUniqueSlugs, parseFrontmatter, resolveSlug } from "./content";
 
 export interface BlogPost {
   id: string;
@@ -48,8 +47,13 @@ const POSTS_DIR = join(process.cwd(), "content", "blog");
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
+/*
+ * strictObject, not object: zod silently strips keys it does not know, so a
+ * typo like `tag:` or an invented `published:` would be dropped without a word
+ * and the post would quietly behave as though the field were never written.
+ */
 const frontmatterSchema = z
-  .object({
+  .strictObject({
     // Optional: the filename is used when this is absent, so existing posts
     // keep their URLs without being edited.
     slug: z.string().min(1).optional(),
@@ -91,7 +95,10 @@ function readTimeFor(body: string): string {
 }
 
 function parsePost(fileName: string): BlogPost {
-  const { data, content } = matter(readFileSync(join(POSTS_DIR, fileName), "utf8"));
+  const { data, content } = parseFrontmatter(
+    readFileSync(join(POSTS_DIR, fileName), "utf8"),
+    `content/blog/${fileName}`
+  );
   const parsed = frontmatterSchema.safeParse(data);
 
   // Fails the build rather than shipping a post with broken JSON-LD.
