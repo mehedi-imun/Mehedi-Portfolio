@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
-import Terminal from "@/components/Terminal";
 import { Badge } from "@/components/ui/badge";
-import { Section, SectionHeading } from "@/components/ui/section";
 import { Timeline } from "@/components/ui/timeline";
 import { blogPostSummaries } from "@/lib/blog";
 import { allExperience, experienceGroups } from "@/lib/experience";
@@ -129,7 +127,7 @@ export default function Home() {
        * skip-to-content never had a target. The footer stays outside it.
        */}
       <main>
-        <Hero />
+        <Hero context={terminalContext} />
 
         <Services />
 
@@ -150,18 +148,6 @@ export default function Home() {
         <Tools />
 
         <Writing posts={writingPosts} />
-
-        <Section id="terminal" aria-labelledby="terminal-heading">
-          <SectionHeading
-            id="terminal-heading"
-            index="07"
-            eyebrow="Try it"
-            title="Explore from the command line"
-            lead="This page's own data, queryable. Every command reads the same modules the rest of the site renders from, so it can never drift out of date."
-            className="mb-8"
-          />
-          <Terminal context={terminalContext} />
-        </Section>
 
         <Faq />
 
