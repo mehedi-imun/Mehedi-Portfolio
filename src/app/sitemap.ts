@@ -4,8 +4,8 @@ import { projects } from "@/lib/projects";
 import { absoluteUrl } from "@/lib/site";
 
 /**
- * Static routes carry a build-time lastModified; blog posts use their real
- * publication date so the sitemap does not claim everything changed today.
+ * Every lastModified in here is a real content date or is absent. Nothing is
+ * stamped with the build time -- see the note inside on why.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   /*

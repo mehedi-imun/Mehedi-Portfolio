@@ -63,6 +63,27 @@ function subscribeToReducedMotion(onChange: () => void) {
   return () => query.removeEventListener("change", onChange);
 }
 
+function subscribeToVisibility(onChange: () => void) {
+  document.addEventListener("visibilitychange", onChange);
+  return () => document.removeEventListener("visibilitychange", onChange);
+}
+
+/*
+ * useSyncExternalStore, not useState + a visibilitychange listener.
+ * `visibilitychange` fires only on a transition, never on subscribe, so a
+ * listener-only version starts from a guessed default and stays there -- a page
+ * opened directly into a background tab would report "visible" forever and run
+ * the demo where nobody can see it. A snapshot getter reads the real value on
+ * mount and on every change.
+ */
+function useTabVisible() {
+  return useSyncExternalStore(
+    subscribeToVisibility,
+    () => document.visibilityState === "visible",
+    () => true
+  );
+}
+
 function usePrefersReducedMotion() {
   return useSyncExternalStore(
     subscribeToReducedMotion,
@@ -271,7 +292,7 @@ export default function Terminal({ context }: { context: TerminalContext }) {
    * interaction further down the page, which is exactly what INP measures.
    */
   const [inView, setInView] = useState(true);
-  const [tabVisible, setTabVisible] = useState(true);
+  const tabVisible = useTabVisible();
 
   const typingId = typing?.id ?? null;
   const typingSteps = typing?.steps ?? 0;
@@ -425,20 +446,14 @@ export default function Terminal({ context }: { context: TerminalContext }) {
     const node = rootRef.current;
     if (!node) return;
 
+    // observe() always delivers one callback for the current state, so the
+    // useState default above self-corrects -- no mount-time read needed here.
     const observer = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
       { threshold: 0.2 }
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const onVisibilityChange = () =>
-      setTabVisible(document.visibilityState === "visible");
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () =>
-      document.removeEventListener("visibilitychange", onVisibilityChange);
   }, []);
 
   /*
