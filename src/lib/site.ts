@@ -6,7 +6,7 @@
  * staging origin; production falls back to the real domain below.
  */
 export const siteConfig = {
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://mehediimun.com").replace(/\/$/, ""),
+  url: ("https://mehediimun.com").replace(/\/$/, ""),
   name: "Mehedi Imun",
   jobTitle: "Full Stack Web Developer",
   title: "Mehedi Imun - Full Stack Web Developer",
