@@ -159,12 +159,14 @@ API route: the form just posts to `https://buttondown.com/api/emails/embed-subsc
 Buttondown's built-in RSS-to-email automation is a paid (Basic-plan) feature. The free alternative
 here is `.github/workflows/notify-subscribers.yml`: on every push to `main` that adds a file under
 `content/blog/`, `scripts/notify-subscribers.mjs` diffs the commit to find newly **added** (not
-edited) `.mdx` files, skips anything `draft: true`, and creates a **draft** email in Buttondown via
-their `POST /v1/emails` API (`status: "draft"` is set explicitly, never auto-send) — so publishing a
-post drafts an email for review, and a human still clicks Send in the Buttondown dashboard. This
-needs a `BUTTONDOWN_API_KEY` **GitHub Actions secret** (Settings → Secrets and variables → Actions on
-the repo) — a different credential from `NEXT_PUBLIC_BUTTONDOWN_USERNAME`, and one this codebase and
-any AI tool working on it should never see or handle directly.
+edited) `.mdx` files, skips anything `draft: true`, and **sends an email to every subscriber
+immediately** — no review step. This is two Buttondown API calls: `POST /v1/emails` with
+`status: "draft"` to create it, then `POST /v1/emails/{id}/send-draft` to trigger the real send
+right away (this is a deliberate choice made after starting with a draft-only, review-first version
+— see git history on this file if that safety tradeoff needs revisiting). This needs a
+`BUTTONDOWN_API_KEY` **GitHub Actions secret** (Settings → Secrets and variables → Actions on the
+repo) — a different credential from `NEXT_PUBLIC_BUTTONDOWN_USERNAME`, and one this codebase and any
+AI tool working on it should never see or handle directly.
 
 ### Tag archive pages
 
