@@ -9,6 +9,7 @@ import { motion, useScroll, useSpring } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 
 const RESUME_URL = siteConfig.resumeUrl;
@@ -73,20 +74,23 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed left-0 top-8 z-50 w-full border-b border-border bg-background/70 backdrop-blur-xl">
+    <header
+      // w-[calc(...)] rather than w-full: a Radix popup (this header's own
+      // theme toggle included) locks body scroll while open, which removes
+      // the page scrollbar and widens the viewport -- a fixed, full-width
+      // header would visibly reflow sideways on every open/close.
+      // react-remove-scroll (used internally by Radix) sets
+      // --removed-body-scroll-bar-size to the scrollbar's width while locked
+      // and leaves it unset otherwise, which the `,0px` fallback covers.
+      className="fixed left-0 top-8 z-50 w-[calc(100%-var(--removed-body-scroll-bar-size,0px))] border-b border-border bg-background/70 backdrop-blur-xl"
+    >
       <motion.div
         aria-hidden
         style={{ scaleX: progress }}
         className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-brand"
       />
       <Container className="flex items-center justify-between py-3">
-        {/* Logo */}
-        <Link
-          href="/"
-          className="bg-gradient-to-r from-brand to-brand-accent bg-clip-text text-2xl font-bold text-transparent"
-        >
-          MEHEDI
-        </Link>
+        <Logo />
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-6">
