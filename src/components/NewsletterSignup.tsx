@@ -20,12 +20,12 @@ export function NewsletterSignup() {
       <h2 className="mb-1 text-lg font-semibold">Get new posts by email</h2>
       <p className="mb-4 text-sm text-muted-foreground">No spam. Unsubscribe anytime.</p>
       <form
-        action={`https://buttondown.email/api/emails/embed-subscribe/${BUTTONDOWN_USERNAME}`}
+        action={`https://buttondown.com/api/emails/embed-subscribe/${BUTTONDOWN_USERNAME}`}
         method="post"
         target="popupwindow"
         onSubmit={() => {
           window.open(
-            `https://buttondown.email/${BUTTONDOWN_USERNAME}`,
+            `https://buttondown.com/${BUTTONDOWN_USERNAME}`,
             "popupwindow",
             "scrollbars=yes,width=800,height=600"
           );
