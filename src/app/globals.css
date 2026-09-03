@@ -166,6 +166,7 @@
     scroll-padding-top: 7rem;
   }
   body {
+
     /*
      * The three stacks are re-declared here, on the element next/font actually
      * puts --font-geist-sans and friends on. A custom property is substituted at

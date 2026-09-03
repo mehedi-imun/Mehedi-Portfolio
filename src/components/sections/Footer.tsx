@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 import { Container } from "@/components/ui/section";
 import { siteConfig } from "@/lib/site";
 
@@ -29,7 +30,7 @@ export default function Footer() {
       <Container className="py-12 md:py-16">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div>
-            <h2 className="mb-4 text-lg font-semibold">{siteConfig.name}</h2>
+            <Logo className="mb-4" />
             <p className="max-w-[45ch] text-muted-foreground">
               {siteConfig.jobTitle} in {siteConfig.location.city},{" "}
               {siteConfig.location.country}. Interfaces, APIs and the
