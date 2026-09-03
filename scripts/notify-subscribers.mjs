@@ -72,7 +72,7 @@ for (const file of addedFiles) {
       body: JSON.stringify({
         subject: data.title,
         body: `${data.excerpt}\n\n[Read the full post](${url})`,
-        status: "publish",
+        status: "draft",
       }),
     });
 
