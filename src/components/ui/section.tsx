@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  * the page had no gutter at all and text sat flush against the viewport edge.
  * The scale below never drops to zero.
  */
-export const sectionContainer = "mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10";
+export const sectionContainer = "mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10";
 
 const sectionRhythm = "py-16 md:py-24";
 

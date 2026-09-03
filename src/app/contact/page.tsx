@@ -35,7 +35,7 @@ export default function ContactPage() {
   return (
     <>
       <main className="mt-20">
-        <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10 pt-12">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10 pt-12">
           <h1 className="text-3xl md:text-5xl font-bold mb-4">
             Contact Mehedi Imun
           </h1>
