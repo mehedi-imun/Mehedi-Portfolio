@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { blogPosts } from "@/lib/blog";
+import { blogPosts, getAllTagSlugs } from "@/lib/blog";
 import { projects } from "@/lib/projects";
 import { absoluteUrl } from "@/lib/site";
 
@@ -48,5 +48,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...projectRoutes, ...postRoutes];
+  const tagRoutes: MetadataRoute.Sitemap = getAllTagSlugs().map((tagSlug) => ({
+    url: absoluteUrl(`/blog/tag/${tagSlug}`),
+    changeFrequency: "weekly",
+    priority: 0.5,
+  }));
+
+  return [...staticRoutes, ...projectRoutes, ...postRoutes, ...tagRoutes];
 }

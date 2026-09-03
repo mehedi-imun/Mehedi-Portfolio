@@ -142,6 +142,29 @@ the four ids from giscus.app and set them in Vercel. Threads are mapped by slug,
 domain change. The previous localStorage comment form and like counter are gone — both were visible
 only to the person who typed them.
 
+### View counts
+
+`PostViews.tsx` shows a per-post view count from GoatCounter's public per-path count endpoint and
+renders nothing unless `NEXT_PUBLIC_GOATCOUNTER_CODE` is set — the same env-gated convention as
+`Comments.tsx`. The site-wide tracking script (which is what actually records the hit) is injected in
+`layout.tsx`, also gated on that var. To turn it on: create a free GoatCounter site and set its code
+(the `xxx` in `xxx.goatcounter.com`) as the env var. There is no backend of ours involved either way.
+
+### Newsletter
+
+`NewsletterSignup.tsx` renders a static HTML form posting directly to Buttondown's hosted endpoint,
+and returns `null` unless `NEXT_PUBLIC_BUTTONDOWN_USERNAME` is set — same convention again. No SDK, no
+API route: the form just posts to `https://buttondown.email/api/emails/embed-subscribe/{username}`.
+
+### Tag archive pages
+
+Every tag on a published post gets a crawlable `/blog/tag/{slug}` page (`app/blog/tag/[tag]/page.tsx`),
+with its own canonical, metadata and JSON-LD — this is what makes a tag indexable, not just a
+client-side filter. The slug comes from `tagToSlug()` in `lib/content.ts` (fs-free, so it is safe to
+import from `BlogCard.tsx`, a component that ends up in the client bundle via `BlogIndex.tsx`).
+`BlogIndex.tsx`'s own tag-toggle buttons still do instant client-side filtering on `/blog` itself —
+the two mechanisms are complementary, not a replacement of each other.
+
 ### Writing in any language
 
 A post sets `lang:` (BCP-47, default `"en"`); the site chrome stays English. There is no translation

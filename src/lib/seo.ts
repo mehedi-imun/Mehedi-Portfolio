@@ -1,5 +1,7 @@
 import type { BlogPost } from "./blog";
+import { minutesFor } from "./blog";
 import { allExperience } from "./experience";
+import { localImageDimensions } from "./images";
 import type { Project } from "./projects";
 import { projectOgImage } from "./projects";
 import { absoluteUrl, siteConfig, socialProfiles } from "./site";
@@ -66,6 +68,26 @@ export function websiteSchema() {
 
 export function blogPostingSchema(post: BlogPost) {
   const url = absoluteUrl(`/blog/${post.slug}`);
+  // A real cover photo beats the generated title card when one exists; its
+  // real dimensions come from the same helper the page component already
+  // uses for the <Image>, so the two can't disagree. The generated OG card
+  // is always exactly 1200x630 (see opengraph-image.tsx).
+  const coverDimensions = post.cover ? localImageDimensions(post.cover) : null;
+  const image = post.cover
+    ? {
+        "@type": "ImageObject",
+        url: absoluteUrl(post.cover),
+        ...(coverDimensions
+          ? { width: coverDimensions.width, height: coverDimensions.height }
+          : {}),
+      }
+    : {
+        "@type": "ImageObject",
+        url: absoluteUrl(`/blog/${post.slug}/opengraph-image`),
+        width: 1200,
+        height: 630,
+      };
+
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -83,8 +105,9 @@ export function blogPostingSchema(post: BlogPost) {
     inLanguage: post.lang,
     author: { "@id": personId },
     publisher: { "@id": personId },
-    // A real cover photo beats the generated title card when one exists.
-    image: absoluteUrl(post.cover ?? `/blog/${post.slug}/opengraph-image`),
+    image,
+    wordCount: post.wordCount,
+    timeRequired: `PT${minutesFor(post.wordCount)}M`,
   };
 }
 

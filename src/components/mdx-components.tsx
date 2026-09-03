@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { CodeBlock } from "@/components/mdx/CodeBlock";
 import { localImageDimensions } from "@/lib/images";
 
 /** Markdown images span the prose column; nothing here is above the fold. */
@@ -41,6 +42,32 @@ export function ContentImage({
       sizes={IMAGE_SIZES}
       className={className}
     />
+  );
+}
+
+/** Note/Tip/Warning share one shell; only the accent tone and label differ. */
+function Callout({
+  tone,
+  label,
+  children,
+}: {
+  tone: "note" | "tip" | "warning";
+  label: string;
+  children: ReactNode;
+}) {
+  const toneClasses = {
+    note: "border-sky-500/50 bg-sky-500/5",
+    tip: "border-emerald-500/50 bg-emerald-500/5",
+    warning: "border-amber-500/50 bg-amber-500/5",
+  }[tone];
+
+  return (
+    <aside className={`not-prose my-6 rounded-lg border-l-4 p-4 ${toneClasses}`}>
+      <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <div className="text-sm [&>p]:my-0">{children}</div>
+    </aside>
   );
 }
 
@@ -101,6 +128,25 @@ export const mdxComponents = {
       <ContentImage src={src} alt={alt} />
       {caption ? <figcaption>{caption}</figcaption> : null}
     </figure>
+  ),
+
+  // Copy-to-clipboard wrapper around rehype-pretty-code's own <pre> output.
+  pre: CodeBlock,
+
+  Note: ({ children }: { children: ReactNode }) => (
+    <Callout tone="note" label="Note">
+      {children}
+    </Callout>
+  ),
+  Tip: ({ children }: { children: ReactNode }) => (
+    <Callout tone="tip" label="Tip">
+      {children}
+    </Callout>
+  ),
+  Warning: ({ children }: { children: ReactNode }) => (
+    <Callout tone="warning" label="Warning">
+      {children}
+    </Callout>
   ),
 
   ...linkComponents,

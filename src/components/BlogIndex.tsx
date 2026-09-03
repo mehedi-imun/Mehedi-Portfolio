@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Reveal } from "@/components/ui/reveal";
 import type { BlogPostSummary } from "@/lib/blog";
 import BlogCard from "./BlogCard";
 
@@ -33,7 +34,8 @@ export default function BlogIndex({ posts, tags }: BlogIndexProps) {
     return posts.filter((post) => {
       const matchesSearch =
         normalizeForSearch(post.title).includes(query) ||
-        normalizeForSearch(post.excerpt).includes(query);
+        normalizeForSearch(post.excerpt).includes(query) ||
+        post.tags.some((tag) => normalizeForSearch(tag).includes(query));
 
       const matchesTags =
         selectedTags.length === 0 ||
@@ -90,9 +92,19 @@ export default function BlogIndex({ posts, tags }: BlogIndexProps) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPosts.map((post) => (
-            <BlogCard key={post.id} post={post} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {/*
+           * "Infinite scroll" without a real pager: every post is already in
+           * this server-rendered HTML (blogPostSummaries omits only the body,
+           * never whole posts), so Reveal's animate-in-on-scroll is purely a
+           * presentational reveal -- nothing is ever missing from the initial
+           * HTML a crawler or no-JS visitor sees. A true slice-and-load pager
+           * would remove that guarantee; do not "optimize" this into one.
+           */}
+          {filteredPosts.map((post, index) => (
+            <Reveal key={post.id} delay={Math.min((index % 8) * 0.05, 0.3)}>
+              <BlogCard post={post} />
+            </Reveal>
           ))}
         </div>
       )}
