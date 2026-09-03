@@ -97,7 +97,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <div className="bg-background min-h-screen">
-      <main className="mx-auto w-full max-w-6xl px-6 sm:px-8 lg:px-10 py-12 pb-24 mt-20">
+      <main className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10 py-12 pb-24 mt-20">
         <div className="mx-auto max-w-3xl">
           <Button
             variant="ghost"

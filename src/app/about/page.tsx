@@ -38,8 +38,8 @@ const aboutPageSchema = {
 export default function AboutPage() {
   return (
     <>
-      <main className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10 py-12 mt-20">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12">
+      <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10 py-12 mt-20">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 lg:gap-12">
           <div className="max-w-3xl">
             <h1 className="text-3xl md:text-5xl font-bold mb-6">
               About Mehedi Imun
@@ -48,7 +48,7 @@ export default function AboutPage() {
               {description}
             </p>
 
-            <section className="mb-12">
+            <section className="mb-8 lg:mb-12">
               <h2 className="text-2xl font-bold mb-4">What I work on</h2>
               <p className="text-muted-foreground normal-case mb-4">
                 I build the parts of an application that have to keep working
@@ -65,7 +65,7 @@ export default function AboutPage() {
               </p>
             </section>
 
-            <section className="mb-12">
+            <section className="mb-8 lg:mb-12">
               <h2 className="text-2xl font-bold mb-4">Teaching</h2>
               <p className="text-muted-foreground normal-case">
                 For three years I taught web development at Programming Hero,
@@ -77,16 +77,16 @@ export default function AboutPage() {
               </p>
             </section>
 
-            <section className="mb-12">
+            <section className="mb-8 lg:mb-12">
               <h2 className="text-2xl font-bold mb-6">Experience</h2>
               {experienceGroups.map((group) => (
-                <div key={group.title} className="mb-8">
+                <div key={group.title} className="mb-6 sm:mb-8">
                   {group.items.map((experience) => (
                     <div
                       key={experience.id}
-                      className="mb-8 relative pl-8 before:content-[''] before:absolute before:left-0 before:top-2 before:w-3 before:h-3 before:bg-brand before:rounded-full before:ring-4 before:ring-brand/20"
+                      className="mb-6 sm:mb-8 relative pl-6 sm:pl-8 before:content-[''] before:absolute before:left-0 before:top-2 before:w-2.5 before:h-2.5 sm:before:w-3 sm:before:h-3 before:bg-brand before:rounded-full before:ring-4 before:ring-brand/20"
                     >
-                      <Badge className="inline-flex items-center rounded-full border border-brand/40 bg-transparent px-4 py-1 font-mono text-xs uppercase tracking-[0.18em] text-brand mb-3">
+                      <Badge className="inline-flex items-center rounded-full border border-brand/40 bg-transparent px-3 py-1 sm:px-4 font-mono text-xs uppercase tracking-[0.12em] sm:tracking-[0.18em] text-brand mb-3">
                         {experience.duration}
                       </Badge>
                       <h3 className="text-xl font-bold">{experience.title}</h3>
@@ -119,18 +119,18 @@ export default function AboutPage() {
             </section>
           </div>
 
-          <aside className="hidden lg:block">
-            <div className="sticky top-28">
-              <div className="relative aspect-square rounded-xl overflow-hidden border bg-muted/30">
+          <aside className="order-first lg:order-last">
+            <div className="lg:sticky lg:top-28">
+              <div className="relative aspect-square w-48 sm:w-56 lg:w-full mx-auto lg:mx-0 rounded-xl overflow-hidden border bg-muted/30">
                 <Image
                   src="/hero-portrait.png"
                   alt="Mehedi Imun, full stack web developer based in Dhaka, Bangladesh"
                   fill
-                  sizes="320px"
+                  sizes="(min-width: 1024px) 320px, 224px"
                   className="object-contain object-bottom"
                 />
               </div>
-              <dl className="mt-6 space-y-4 text-sm">
+              <dl className="mt-4 space-y-3 lg:mt-6 lg:space-y-4 text-sm">
                 <div>
                   <dt className="font-medium">Location</dt>
                   <dd className="text-muted-foreground">

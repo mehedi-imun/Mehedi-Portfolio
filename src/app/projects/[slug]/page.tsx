@@ -70,7 +70,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const { previous, next } = getProjectNeighbours(project.slug);
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10 py-12 mt-20">
+    <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10 py-12 mt-20">
       <div className="max-w-3xl mx-auto">
         <Button variant="ghost" asChild className="mb-6 pl-0 hover:bg-transparent">
           <Link href="/projects" className="flex items-center">

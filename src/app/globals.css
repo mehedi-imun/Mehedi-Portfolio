@@ -70,20 +70,14 @@
   --foreground: oklch(0.145 0 0);
   /*
    * The brand orange is oklch(0.7625 0.156 50) -- the #ff914d this site was
-   * built around. Against white that measures 2.2:1, so it can never carry
-   * small text in light mode no matter how it is applied. --brand is therefore
-   * darkened here to clear 4.5:1 and left at full strength under .dark, where
-   * the same hue already reaches 8.9:1. --brand-accent keeps the original for
-   * fills, gradients and glows, which carry no text and are not held to it.
+   * built around. Against white that measures 2.2:1, which fails WCAG AA for
+   * text at any size. --brand was previously darkened to oklch(0.55 0.14 50)
+   * to clear 4.5:1; that tradeoff was deliberately reversed on request so
+   * light mode shows the true brand colour everywhere text-brand is used
+   * (nav links, badges, labels) rather than a contrast-safe substitute.
+   * --brand-accent, used for fills/gradients/glows, was already this value.
    */
-  /*
-   * 0.58/0.15 cleared 4.5:1 on pure white but only reached 3.97 on the tinted
-   * surfaces the brand actually sits on -- bg-brand/10 badges, and the
-   * translucent header once a warm glow sits behind it. Darkened until it
-   * passes on those too (4.52:1 on #f9efe7, 5.12:1 on white); chroma pulled to
-   * 0.14 so the colour stays inside the sRGB gamut rather than being clamped.
-   */
-  --brand: oklch(0.55 0.14 50);
+  --brand: oklch(0.7625 0.156 50);
   --brand-foreground: oklch(0.985 0 0);
   --brand-accent: oklch(0.7625 0.156 50);
   --card: oklch(1 0 0);

@@ -50,7 +50,7 @@ export default async function TagArchivePage({ params }: PageProps) {
   ];
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10 py-12 pb-24 mt-20">
+    <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10 py-12 pb-24 mt-20">
       <Breadcrumbs crumbs={crumbs} />
       <h1 className="text-3xl md:text-4xl font-bold mb-8">
         Posts tagged &ldquo;{tag}&rdquo;

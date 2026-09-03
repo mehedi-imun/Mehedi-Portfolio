@@ -123,7 +123,7 @@ export default function Header() {
         </nav>
 
         {/* Mobile Menu */}
-        <div className="md:hidden flex items-center">
+        <div className="md:hidden flex items-center gap-2">
           <a href={RESUME_URL} target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="sm" aria-label="View Resume">
               <Eye />
@@ -136,7 +136,6 @@ export default function Header() {
             aria-label={isOpen ? "Close menu" : "Open menu"}
             aria-expanded={isOpen}
             onClick={() => setIsOpen(!isOpen)}
-            className="ml-2"
           >
             {isOpen ? <X /> : <Menu />}
           </Button>

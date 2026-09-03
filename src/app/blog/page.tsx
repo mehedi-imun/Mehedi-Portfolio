@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function BlogPage() {
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-10 py-12 mt-20">
+    <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10 py-12 mt-20">
       <h1 className="text-2xl md:text-4xl font-bold mb-4">
         Writing on web development
       </h1>

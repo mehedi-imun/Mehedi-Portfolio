@@ -1,0 +1,22 @@
+
+> portfolionew@0.1.0 dev
+> next dev
+
+[32m✔[0m [33mConsole Ninja[0m extension is connected to [33mNext.js[0m, see [36mhttps://tinyurl.com/2vt8jxzw[0m
+▲ Next.js 16.3.3 (Turbopack)
+- Local:         http://localhost:3002
+- Network:       http://192.168.0.2:3002
+- Environments: .env.local
+✓ Ready in 644ms
+⚠ Console Ninja Turbopack support is a PRO feature, [33mcurrently available to community users while in preview[0m
+✓ Running next.config.ts took 33ms
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3001
+- PID:          2284
+- Dir:          C:\web-development\portfollio\portfolionew
+- Log:          .next\dev\logs\next-development.log
+
+You can access the existing server at http://localhost:3001,
+or run taskkill /PID 2284 /F to stop it and start a new one.
+[?25h
