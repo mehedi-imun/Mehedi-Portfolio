@@ -1,0 +1,34 @@
+name: Notify subscribers on new post
+
+# Runs whenever a push to main adds a post file. Publishing here is already
+# "add one .mdx file, git push" (see AGENTS.md), so this piggybacks on that
+# instead of introducing a separate publish step.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/blog/*.mdx"
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history so the script can diff against the pre-push commit
+          # to find which files were newly ADDED, not edited.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Draft a Buttondown email for each new post
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+          GIT_DIFF_BEFORE: ${{ github.event.before }}
+          GIT_DIFF_AFTER: ${{ github.event.after }}
+        run: node scripts/notify-subscribers.mjs
