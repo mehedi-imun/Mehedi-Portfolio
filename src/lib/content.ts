@@ -1,4 +1,5 @@
 import matter from "gray-matter";
+import GithubSlugger from "github-slugger";
 
 /**
  * Slug rules shared by the blog and project content modules.
@@ -59,6 +60,17 @@ export function hueForSlug(slug: string): number {
 export function coverGradient(slug: string): string {
   const hue = hueForSlug(slug);
   return `linear-gradient(135deg, oklch(0.45 0.09 ${hue}), oklch(0.28 0.06 ${(hue + 40) % 360}))`;
+}
+
+/**
+ * Deterministic per-tag slug for the `/blog/tag/[tag]` archive route. A fresh
+ * slugger per call is deliberate -- tags are already unique (the frontmatter
+ * schema and `allTags`'s Set dedupe them), so there is no cross-tag collision
+ * to resolve, and this stays a pure function of one string. Fs-free so it can
+ * be imported from client components (BlogCard) the same way coverGradient is.
+ */
+export function tagToSlug(tag: string): string {
+  return new GithubSlugger().slug(tag);
 }
 
 /**

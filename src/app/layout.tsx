@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Hind_Siliguri, Literata, Tiro_Bangla } from "next/font/google";
+import Script from "next/script";
 import JsonLd from "@/components/JsonLd";
 import Header from "@/components/Header";
 import TopTicker from "@/components/TopTicker";
@@ -163,6 +164,19 @@ export default function RootLayout({
           {children}
         </ThemeProvider>
         <JsonLd schema={[personSchema(), websiteSchema()]} />
+        {/*
+         * Site-wide view tracking via GoatCounter -- free, privacy-friendly,
+         * no backend of ours. PostViews.tsx reads the per-path count this
+         * records. Renders nothing unless NEXT_PUBLIC_GOATCOUNTER_CODE is set,
+         * the same env-gated convention Comments.tsx uses for giscus.
+         */}
+        {process.env.NEXT_PUBLIC_GOATCOUNTER_CODE ? (
+          <Script
+            data-goatcounter={`https://${process.env.NEXT_PUBLIC_GOATCOUNTER_CODE}.goatcounter.com/count`}
+            src="//gc.zgo.at/count.js"
+            strategy="afterInteractive"
+          />
+        ) : null}
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
-import { assertAssetPath, assertUniqueSlugs, parseFrontmatter, resolveSlug } from "./content";
+import { assertAssetPath, assertUniqueSlugs, parseFrontmatter, resolveSlug, tagToSlug } from "./content";
 
 export interface BlogPost {
   id: string;
@@ -19,6 +19,8 @@ export interface BlogPost {
   updated?: string;
   /** Derived from the body word count, not hand-maintained. */
   readTime: string;
+  /** Raw body word count, backing both `readTime` and the BlogPosting schema's `wordCount`. */
+  wordCount: number;
   tags: string[];
   /**
    * BCP-47 tag for the post's primary language, defaulting to "en". Mixed
@@ -89,9 +91,17 @@ const displayDate = new Intl.DateTimeFormat("en-US", {
 
 const WORDS_PER_MINUTE = 200;
 
-function readTimeFor(body: string): string {
-  const words = body.trim().split(/\s+/).filter(Boolean).length;
-  return `${Math.max(1, Math.round(words / WORDS_PER_MINUTE))} min read`;
+function wordCountFor(body: string): number {
+  return body.trim().split(/\s+/).filter(Boolean).length;
+}
+
+/** Shared with blogPostingSchema's `timeRequired`, so the two never disagree. */
+export function minutesFor(wordCount: number): number {
+  return Math.max(1, Math.round(wordCount / WORDS_PER_MINUTE));
+}
+
+function readTimeLabel(wordCount: number): string {
+  return `${minutesFor(wordCount)} min read`;
 }
 
 function parsePost(fileName: string): BlogPost {
@@ -113,6 +123,7 @@ function parsePost(fileName: string): BlogPost {
     parsed.data;
   const slug = resolveSlug(parsed.data.slug, fileName, "content/blog");
   if (cover) assertAssetPath(cover, `content/blog/${fileName}`);
+  const wordCount = wordCountFor(content);
 
   return {
     id: slug,
@@ -123,7 +134,8 @@ function parsePost(fileName: string): BlogPost {
     date: displayDate.format(new Date(`${date}T00:00:00Z`)),
     dateISO: date,
     updated,
-    readTime: readTimeFor(content),
+    readTime: readTimeLabel(wordCount),
+    wordCount,
     tags,
     lang: lang ?? "en",
     cover,
@@ -188,6 +200,7 @@ export const blogPostSummaries: BlogPostSummary[] = blogPosts.map(
     dateISO,
     updated,
     readTime,
+    wordCount,
     tags,
     lang,
     cover,
@@ -203,6 +216,7 @@ export const blogPostSummaries: BlogPostSummary[] = blogPosts.map(
     dateISO,
     updated,
     readTime,
+    wordCount,
     tags,
     lang,
     cover,
@@ -231,4 +245,43 @@ export function getRelatedPosts(post: BlogPost, limit = 3): BlogPostSummary[] {
     )
     .slice(0, limit)
     .map(({ candidate }) => candidate);
+}
+
+/**
+ * Chronological neighbours, independent of tag overlap -- guarantees an
+ * internal link even for a post that shares no tags with anything else,
+ * unlike getRelatedPosts. blogPostSummaries is sorted newest-first, so the
+ * array's next entry is the OLDER post (`prev`, published earlier) and the
+ * previous entry is the NEWER post (`next`, published later): prev/next
+ * describes reading order through time, not array position.
+ */
+export function getAdjacentPosts(
+  post: BlogPost
+): { prev?: BlogPostSummary; next?: BlogPostSummary } {
+  const index = blogPostSummaries.findIndex((candidate) => candidate.slug === post.slug);
+  if (index === -1) return {};
+  return {
+    prev: blogPostSummaries[index + 1],
+    next: index > 0 ? blogPostSummaries[index - 1] : undefined,
+  };
+}
+
+/** Every tag's archive-page slug, for generateStaticParams and the sitemap. */
+export function getAllTagSlugs(): string[] {
+  return allTags.map(tagToSlug);
+}
+
+/**
+ * Resolves a tag archive slug back to the real tag string and its posts.
+ * Returns undefined for an unknown slug so the route can call notFound().
+ */
+export function getPostsByTagSlug(
+  tagSlug: string
+): { tag: string; posts: BlogPostSummary[] } | undefined {
+  const tag = allTags.find((candidate) => tagToSlug(candidate) === tagSlug);
+  if (!tag) return undefined;
+  return {
+    tag,
+    posts: blogPostSummaries.filter((post) => post.tags.includes(tag)),
+  };
 }

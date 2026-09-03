@@ -57,6 +57,11 @@ ${categories}
     <description>${escapeXml(siteConfig.description)}</description>
     <language>en</language>
     <atom:link href="${feedUrl}" rel="self" type="application/rss+xml" />
+    <image>
+      <url>${absoluteUrl("/icon.svg")}</url>
+      <title>${escapeXml(siteConfig.title)}</title>
+      <link>${absoluteUrl("/blog")}</link>
+    </image>
 ${lastBuildDate}${items}
   </channel>
 </rss>
